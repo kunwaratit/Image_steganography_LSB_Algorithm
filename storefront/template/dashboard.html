@@ -1,0 +1,127 @@
+{% include 'header.html' %}
+
+<div style="background-color: #ffffffdc; margin:0px 5vw; padding: 50px;">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Secure File System</h1>
+            <p>Protect and manage your files with ease.</p>
+            <a href="#" class="cta-button">Get Started</a>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="feature">
+            <h2>Secure File Storage</h2>
+            <p>Store your files in a highly secure environment with advanced encryption technology.</p>
+        </div>
+        <div class="feature">
+            <h2>Access Control</h2>
+            <p>Control who can access your files and folders with fine-grained permissions and user management.</p>
+        </div>
+        <div class="feature">
+            <h2>Collaboration</h2>
+            <p>Collaborate with your team by sharing files, commenting, and tracking changes in real-time.</p>
+        </div>
+    </section>
+
+    <section class="pricing-section">
+        <h2>Pricing</h2>
+        <p>Choose a plan that suits your needs and start securing your files today.</p>
+        <div class="pricing-plans">
+            <div class="pricing-plan">
+                <h3>Basic</h3>
+                <p>5 GB Storage</p>
+                <p>Up to 5 Users</p>
+                <p>$9.99/month</p>
+                <a href="#" class="cta-button">Choose Plan</a>
+            </div>
+            <div class="pricing-plan">
+                <h3>Pro</h3>
+                <p>25 GB Storage</p>
+                <p>Up to 10 Users</p>
+                <p>$19.99/month</p>
+                <a href="#" class="cta-button">Choose Plan</a>
+            </div>
+            <div class="pricing-plan">
+                <h3>Enterprise</h3>
+                <p>Unlimited Storage</p>
+                <p>Custom User Limit</p>
+                <p>Contact Us</p>
+                <a href="#" class="cta-button">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% include 'footer.html' %}
+
+<style>
+    .hero-content h1 {
+        font-size: 40px;
+        margin-bottom: 20px;
+    }
+
+    .cta-button {
+        display: inline-block;
+        padding: 12px 20px;
+        background-color: #ff6600;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .cta-button:hover {
+        background-color: #ff822b;
+    }
+
+    .features-section {
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .features-section .feature {
+        margin-bottom: 40px;
+    }
+
+    .features-section h2 {
+        font-size: 30px;
+    }
+
+    .pricing-section {
+        background-color: #fff;
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .pricing-section h2 {
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+
+    .pricing-section p {
+        margin-bottom: 40px;
+    }
+
+    .pricing-plans {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .pricing-plan {
+        flex-basis: 300px;
+        padding: 20px;
+        margin: 0 20px;
+        background-color: #f2f2f2;
+        border-radius: 4px;
+    }
+
+    .pricing-plan h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .pricing-plan p {
+        margin-bottom: 8px;
+    }
+</style>

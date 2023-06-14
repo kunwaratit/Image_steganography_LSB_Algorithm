@@ -1,0 +1,96 @@
+{% include 'header.html' %}
+<section class="settings-section">
+    <h1>Settings</h1>
+    <form class="settings-form">
+        <div class="form-group">
+            <label for="api-key">API Key:</label>
+            <input type="text" id="api-key" name="api-key" placeholder="Enter your API Key">
+        </div>
+        <div class="form-group">
+            <label for="encryption-key">Encryption Key:</label>
+            <input type="password" id="encryption-key" name="encryption-key" placeholder="Enter your Encryption Key">
+        </div>
+        <div class="form-group">
+            <label for="max-file-size">Max File Size:</label>
+            <input type="number" id="max-file-size" name="max-file-size"
+                placeholder="Enter the max file size (in bytes)">
+        </div>
+        <div class="form-group">
+            <label for="allowed-file-types">Allowed File Types:</label>
+            <input type="text" id="allowed-file-types" name="allowed-file-types"
+                placeholder="Enter the allowed file types">
+        </div>
+        <div class="form-group">
+            <label for="default-storage-quota">Default Storage Quota:</label>
+            <input type="number" id="default-storage-quota" name="default-storage-quota"
+                placeholder="Enter the default storage quota (in bytes)">
+        </div>
+        <div class="form-group">
+            <label for="email-notifications">Email Notifications:</label>
+            <input type="checkbox" id="email-notifications" name="email-notifications">
+        </div>
+        <div class="form-group">
+            <label for="theme">Theme:</label>
+            <select id="theme" name="theme">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+        <button type="submit">Save Settings</button>
+    </form>
+</section>
+{% include 'footer.html' %}
+<style>
+    .settings-section {
+        padding: 20px;
+    }
+
+    .settings-section h1 {
+        margin-bottom: 20px;
+    }
+
+    .settings-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #002147;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #00162d;
+    }
+</style>

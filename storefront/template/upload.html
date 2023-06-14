@@ -1,0 +1,55 @@
+{% include 'header.html' %}
+<section class="upload-section">
+    <h1>Upload File</h1>
+    <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file">
+        <input type="text" name="key" id="file" placeholder="encryption-key">
+        <button type="submit">Upload</button>
+        <br>
+        <input type="file" name="file" id="file" hidden>
+        <input type="text" name="key" id="file" placeholder="encryption-key" hidden>
+        <button type="submit">Upload with $t3g0</button>
+    </form>
+</section>
+{% include 'footer.html' %}
+<style>
+    input[type="text"] {
+        width: 92%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #041574;
+        border-radius: 4px;
+    }
+
+    .upload-section {
+        padding: 20px;
+    }
+
+    .upload-section h1 {
+        margin-bottom: 20px;
+    }
+
+    .upload-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .upload-form input[type="file"] {
+        margin-bottom: 10px;
+    }
+
+    button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #002147;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #00162d;
+    }
+</style>

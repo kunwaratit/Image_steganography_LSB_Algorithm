@@ -1,0 +1,75 @@
+{% include 'header.html' %}
+<section class="files-section">
+    <h1>Your Files</h1>
+    <table class="files-table">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Size</th>
+                <th>Uploaded By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>file1.txt</td>
+                <td>10 KB</td>
+                <td>John Doe</td>
+                <td>
+                    <a href="#" class="btn-download">Download</a>
+                    <a href="#" class="btn-delete">Delete</a>
+                </td>
+            </tr>
+            <tr>
+                <td>file2.docx</td>
+                <td>50 KB</td>
+                <td>Jane Smith</td>
+                <td>
+                    <a href="#" class="btn-download">Download</a>
+                    <a href="#" class="btn-delete">Delete</a>
+                </td>
+            </tr>
+            <!-- Add more file rows as needed -->
+        </tbody>
+    </table>
+</section>
+{% include 'footer.html' %}
+<style>
+    .files-section {
+        padding: 20px;
+    }
+
+    .files-section h1 {
+        margin-bottom: 20px;
+    }
+
+    .files-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .files-table th,
+    .files-table td {
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .files-table th {
+        background-color: #f2f2f2;
+    }
+
+    .btn-download,
+    .btn-delete {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #002147;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    .btn-delete {
+        background-color: #ff0000;
+        margin-left: 10px;
+    }
+</style>

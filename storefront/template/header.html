@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{title}}</title>
+
+</head>
+<header>
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <a href="#"><img src="/static/logo5.png" style="padding: 0px;"></a>
+        </div>
+        <ul class="navbar-items">
+            <li class="{% if request.path == '/dashboard/' %}active {% endif %}"><a href="/dashboard">Home</a></li>
+            <li class="{% if request.path == '/files/' %}active {% endif %}"><a href="/files">Files</a></li>
+            <li class="{% if request.path == '/files/' %}active {% endif %}"><a href="/files">Plans</a></li>
+            <li class="{% if request.path == '/upload/' %}active {% endif %}"><a href="/upload">Upload</a></li>
+            <li class="{% if request.path == '/contact/' %}active {% endif %}"><a href="/contact">Contact</a></li>
+            <li class="{% if request.path == '/setting/' %}active {% endif %}"><a href="/setting">Settings</a></li>
+            <li class="{% if request.path == '/login/' %}active {% endif %}"><a href="/login">Login</a></li>
+            <li class="{% if request.path == '/sign-up/' %}active {% endif %}"><a href="/sign-up">Register</a></li>
+            <li class="{% if request.path == '/' %}active {% endif %}"><a href="/dashboard">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+    <div style="background-color: #f1f1f1">
+        <hr>
+
+
+
+        <style>
+            .navbar-items .active a {
+                background-color: #002147;
+                color: #fff;
+                border-top: 4px solid orangered;
+            }
+
+            * {
+                padding: 0px;
+                margin: 0px;
+
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            header {
+                background-color: #fff;
+                color: #333;
+            }
+
+            .navbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 5px 20px 4px 20px;
+            }
+
+            .navbar-logo img {
+                height: 40px;
+            }
+
+            .navbar-items {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .navbar-items li {
+                display: inline-block;
+                margin-left: 15px;
+            }
+
+            .navbar-items li:first-child {
+                margin-left: 0;
+            }
+
+            .navbar-items li a {
+                color: #333;
+                text-decoration: none;
+                padding: 10px;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+
+            .navbar-items li a:hover {
+                background-color: #002147;
+                color: #fff;
+                border-bottom: 4px solid;
+                border-color: #ff6600;
+
+            }
+
+
+
+
+            footer {
+                background-color: #333;
+                color: #fff;
+                padding: 20px;
+            }
+
+            .footer-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .footer-links {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .footer-links li {
+                display: inline-block;
+                margin-right: 10px;
+            }
+
+            .footer-links li a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+            .footer-links li a:hover {
+                text-decoration: underline;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            footer {
+                background-color: #fff;
+                color: #333;
+                padding: 20px;
+            }
+
+            .footer-content {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .footer-links {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .footer-links li {
+                display: inline-block;
+                margin-left: 10px;
+            }
+
+            .footer-links li:first-child {
+                margin-left: 0;
+            }
+
+            .footer-links li a {
+                color: #333;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+            .footer-links li a:hover {
+                color: #ff6600;
+            }
+        </style>
