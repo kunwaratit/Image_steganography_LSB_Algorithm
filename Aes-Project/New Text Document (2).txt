@@ -1,0 +1,10 @@
+https://economictimes.indiatimes.com/definition/cryptography
+
+liimit wrong password
+
+https://youtu.be/ly2XXOFzAhg
+https://www.cryptool.org/en/cto/
+random num generator to make diff cypher text every time
+https://github.com/Mehul2205/Cryptography-Assignments/blob/master/Lab5/AES.ipynb
+
+https://github.com/marvinborner/AESvisualizer/blob/master/encrypt.py
