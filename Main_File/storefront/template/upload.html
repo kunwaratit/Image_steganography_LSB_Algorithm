@@ -1,5 +1,16 @@
 {% include 'header.html' %}
 <section class="upload-section">
+    <h1>Encrypter</h1>
+    <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file">
+        <input type="text" name="key" id="file" placeholder="Message">
+        <input type="text" name="key" id="file" placeholder="encryption-key">
+        <button type="submit">Encrypt</button>
+
+    </form>
+</section>
+
+<section class="upload-section">
     <h1>Upload File</h1>
     <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
         <input type="file" name="file" id="file">

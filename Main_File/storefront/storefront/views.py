@@ -61,22 +61,23 @@ def encdec(request):
             ciphertext= iv + ciphertext_bytes
             return ciphertext
         def encrypt_file(self, file_name):
-            with open(file_name, 'rb') as fo:
+            with open("static/"+file_name, 'rb') as fo:
                 plaintext = fo.read()
             
             enc = self.encrypt(plaintext, self.key)
-            with open(file_name + ".enc", 'wb') as fo:
+            with open("static/"+file_name + ".enc", 'wb') as fo:
                 fo.write(enc)
-            os.remove(file_name)
+            os.remove("static/"+file_name)
 
             
     key = b'LEDMXIQBGNVOJRUI'
     enc = Encryptor(key)
-  
+    ciphertext=enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+    
   #  message1=input("enter message")
    # message=bytes(message1, 'utf-8')
    # print(message)
-   # ciphertext=enc.encrypt(message,key) 
+  #  ciphertext=enc.encrypt(message,key) 
    # print(ciphertext)
     
   #  message=input("enter message")
@@ -85,6 +86,7 @@ def encdec(request):
   
   
   #correct 
-    enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
-    data={'data1':'ciphertext'}
+   
+    data={}
+    data['data1']=key
     return render(request,"encdec.html",data)
