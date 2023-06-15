@@ -55,6 +55,7 @@ def encdec(request):
 
         def encrypt(self, message, key):
             message = self.pad(message)
+            key = key.encode('utf-8')
             iv = Random.new().read(AES.block_size)
             cipher = AES.new(key, AES.MODE_CBC, iv)
             ciphertext_bytes=cipher.encrypt(message)
@@ -70,7 +71,9 @@ def encdec(request):
             os.remove("static/"+file_name)
 
             
-    key = b'LEDMXIQBGNVOJRUI'
+  #  key = b'LEDMXIQBGNVOJRUI'
+    data1 = os.urandom(16)
+    key=b64encode(data1).decode('utf-8')
     enc = Encryptor(key)
     ciphertext=enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
     
