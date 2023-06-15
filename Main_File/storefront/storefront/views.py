@@ -32,16 +32,16 @@ def files(request):
         'title':'SSFS-Sign-Up',
     }
     return render(request,"files.html",data)
-def upload(request):
+'''def upload(request):
     data={
         'title':'SSFS-Sign-Up',
     }
     return render(request,"upload.html",data)
+'''
 
 
 
-
-def encdec(request):
+def upload(request):
     import os
     from Crypto import Random
     from Crypto.Cipher import AES
@@ -75,7 +75,7 @@ def encdec(request):
     data1 = os.urandom(16)
     key=b64encode(data1).decode('utf-8')
     enc = Encryptor(key)
-    ciphertext=enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+    enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
     
   #  message1=input("enter message")
    # message=bytes(message1, 'utf-8')
@@ -90,6 +90,9 @@ def encdec(request):
   
   #correct 
    
-    data={}
+    
+    data={
+        'title':'SSFS-Sign-Up',
+    }
     data['data1']=key
-    return render(request,"encdec.html",data)
+    return render(request,"upload.html",data)

@@ -3,8 +3,11 @@
     <h1>Encrypter</h1>
     <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
         <input type="file" name="file" id="file">
-        <input type="text" name="key" id="file" placeholder="Message">
-        <input type="text" name="key" id="file" placeholder="encryption-key">
+
+        <input type="text" name="key" id="file" placeholder="Message"><br>
+        <input type="checkbox" name="encrypt" id=""> Encrypt to Gen Key
+        <input type="text" name="key" id="file" value="{{data1}}" placeholder="encryption-key" disabled>
+        <p><i>key is imp to decrypt so donot loose.</i></p>
         <button type="submit">Encrypt</button>
 
     </form>
@@ -17,6 +20,7 @@
         <input type="text" name="key" id="file" placeholder="encryption-key">
         <button type="submit">Upload</button>
         <br>
+
         <input type="file" name="file" id="file" hidden>
         <input type="text" name="key" id="file" placeholder="encryption-key" hidden>
         <button type="submit">Upload with $t3g0</button>
