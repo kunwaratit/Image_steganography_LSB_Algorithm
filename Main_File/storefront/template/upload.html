@@ -1,12 +1,47 @@
 {% include 'header.html' %}
 <section class="upload-section">
+    <h1>Encrypter</h1>
+    <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file">
+
+        <input type="text" name="key" id="file" placeholder="Message"><br>
+        <input type="checkbox" name="encrypt" id="encrypt" onclick="encryptfile()"> Encrypt to Gen Key
+        <input type="checkbox" name="stego" id="stego" onclick="stegofile()"> Stegnography
+        <input type="text" name="key" id="encryption-key" value="" placeholder="encryption-key" disabled>
+        <p><i style="font-weight: lighter;">key is imp to decrypt so donot loose.</i></p>
+        Upload Cover File <input type="file" name="file" id="file">
+        <button type="submit">Encrypt</button>
+
+    </form>
+</section>
+<script>
+    function encryptfile() {
+        let checkbox = document.getElementById("encrypt");
+        let text = document.getElementById("encryption-key");
+
+        if (checkbox.checked) {
+            text.value = "{{keyvalue}}";
+        }
+    }
+    function stegofile() {
+        let checkbox = document.getElementById("stego");
+        let text = document.getElementById("stegofile");
+
+        if (checkbox.checked) {
+            text.value = "{{keyvalue}}";
+        }
+    }
+</script>
+
+<section class="upload-section">
     <h1>Upload File</h1>
     <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
         <input type="file" name="file" id="file">
         <input type="text" name="key" id="file" placeholder="encryption-key">
         <button type="submit">Upload</button>
         <br>
-        <input type="file" name="file" id="file" hidden>
+
+        <input type="file" name="file" id="file">
         <input type="text" name="key" id="file" placeholder="encryption-key" hidden>
         <button type="submit">Upload with $t3g0</button>
     </form>
