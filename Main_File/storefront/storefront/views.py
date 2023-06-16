@@ -74,6 +74,7 @@ def upload(request):
   #  key = b'LEDMXIQBGNVOJRUI'
     data1 = os.urandom(16)
     key=b64encode(data1).decode('utf-8')
+   
     enc = Encryptor(key)
     enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
     
@@ -94,5 +95,5 @@ def upload(request):
     data={
         'title':'SSFS-Sign-Up',
     }
-    data['data1']=key
+    data['keyvalue']=key
     return render(request,"upload.html",data)
