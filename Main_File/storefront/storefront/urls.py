@@ -28,5 +28,7 @@ urlpatterns = [
     path('setting/',views.setting),
     path('files/',views.files),
     path('upload/',views.upload),
-   # path('encdec/',views.encdec),
+    path('encrypt/',views.enckey,name="key"),
+    path('encdec/',views.encdec,name="encdec"),
+    
 ]
