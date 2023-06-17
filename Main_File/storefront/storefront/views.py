@@ -32,16 +32,16 @@ def files(request):
         'title':'SSFS-Sign-Up',
     }
     return render(request,"files.html",data)
-def upload(request):
+'''def upload(request):
     data={
         'title':'SSFS-Sign-Up',
     }
     return render(request,"upload.html",data)
+'''
 
 
 
-
-def encdec(request):
+def upload(request):
     import os
     from Crypto import Random
     from Crypto.Cipher import AES
@@ -55,28 +55,33 @@ def encdec(request):
 
         def encrypt(self, message, key):
             message = self.pad(message)
+            key = key.encode('utf-8')
             iv = Random.new().read(AES.block_size)
             cipher = AES.new(key, AES.MODE_CBC, iv)
             ciphertext_bytes=cipher.encrypt(message)
             ciphertext= iv + ciphertext_bytes
             return ciphertext
         def encrypt_file(self, file_name):
-            with open(file_name, 'rb') as fo:
+            with open("static/"+file_name, 'rb') as fo:
                 plaintext = fo.read()
             
             enc = self.encrypt(plaintext, self.key)
-            with open(file_name + ".enc", 'wb') as fo:
+            with open("static/"+file_name + ".enc", 'wb') as fo:
                 fo.write(enc)
-            os.remove(file_name)
+            os.remove("static/"+file_name)
 
             
-    key = b'LEDMXIQBGNVOJRUI'
+  #  key = b'LEDMXIQBGNVOJRUI'
+    data1 = os.urandom(16)
+    key=b64encode(data1).decode('utf-8')
+   
     enc = Encryptor(key)
-  
+    enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+    
   #  message1=input("enter message")
    # message=bytes(message1, 'utf-8')
    # print(message)
-   # ciphertext=enc.encrypt(message,key) 
+  #  ciphertext=enc.encrypt(message,key) 
    # print(ciphertext)
     
   #  message=input("enter message")
@@ -85,6 +90,10 @@ def encdec(request):
   
   
   #correct 
-    enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
-    data={'data1':'ciphertext'}
-    return render(request,"encdec.html",data)
+   
+    
+    data={
+        'title':'SSFS-Sign-Up',
+    }
+    data['keyvalue']=key
+    return render(request,"upload.html",data)
