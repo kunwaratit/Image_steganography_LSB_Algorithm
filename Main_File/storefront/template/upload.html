@@ -23,7 +23,7 @@
     function encryptfile() {
         let checkbox = document.getElementById("encrypt");
         if (checkbox.checked) {
-            location.href = '{% url 'key' %}'
+            location.href = "{% url 'key' %}";
             checkbox.checked = checked;
         }
     }
