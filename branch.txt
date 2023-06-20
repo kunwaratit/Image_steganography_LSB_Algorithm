@@ -6,6 +6,6 @@ git pull origin master/main	    =>pull from master to branchname you are in
 -->git status
 -->git add .
 -->git commit -m "message"	
---->git push origin <branchname>		    
+--->git push origin <<branchname>>		    
 git commit -a -m "message"	    =>add and commit
 

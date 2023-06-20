@@ -33,6 +33,10 @@ def files(request):
     }
     return render(request,"files.html",data)
 def upload(request):
+    if request.method=="POST":
+        uploaded_files=request.FILES['document']
+        print(uploaded_files.name)
+    
     data={
         'title':'SSFS-Sign-Up',
     }
