@@ -39,18 +39,41 @@ def upload(request):
     return render(request,"upload.html",data)
 
 
+from .forms import NameForm
+
+
+def get_name(request):
+    # if this is a POST request we need to process the form data
+    if request.method == "POST":
+        # create a form instance and populate it with data from the request:
+        form = NameForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect("/thanks/")
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NameForm()
+
+    return render(request, "name.html", {"form": form})
+
+
+
     
 import os
 from Crypto import Random
 from Crypto.Cipher import AES
 from base64 import b64encode, b64decode
-
+'''
 def enckey(request):
     data1 = os.urandom(16)
     key=b64encode(data1).decode('utf-8')
     data={}
     data['keyvalue']=key
-    return 
+    return '''
 def enckey(request):
     
     
@@ -58,12 +81,15 @@ def enckey(request):
     key=b64encode(data1).decode('utf-8')
     data={}
     data['keyvalue']=key
-    
+    global keyval
+    def keyval():
+        return key
     return render(request,"upload.html",data)
      
 def encdec(request):
-    enckey(request)
     
+    key=keyval()
+    print(key)
     class Encryptor:
        
         def __init__(self, key):
