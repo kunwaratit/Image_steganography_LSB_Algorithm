@@ -1,0 +1,5 @@
+Problem:
+    xampp server stopped 
+    
+solution:
+    sudo apachectl stop
