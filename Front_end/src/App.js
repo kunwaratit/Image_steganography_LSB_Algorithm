@@ -6,6 +6,7 @@ import { Register } from './Register';
 import Upload from './Upload';
 import Home from './Home';
 import Contact from './Contact';
+import { Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   const [currentForm, setCurrentForm] = useState('login');
@@ -16,13 +17,20 @@ function App() {
 
   return (
     <div className="App">
-      <div><Upload /></div>
-      
-      {
+      <Routes>
+        <Route path='/' element= {  <Home />} />
+        <Route path='/upload' element= {<Upload />} />
+        <Route path='/contact' element= {<Contact />} />
+        <Route path='/login' element={
         currentForm == "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />
-      }
+      } />
+      
+      </Routes>
+     
+      
+      
 
-      <Contact />
+      
     </div>
   );
 }
