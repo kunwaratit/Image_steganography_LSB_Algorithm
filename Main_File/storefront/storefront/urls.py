@@ -21,12 +21,14 @@ from storefront import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),\
-    path('dashboard/',views.dashboard),\
+    path('',views.dashboard),\
     path('login/',views.login),
     path('sign-up/',views.signup),
     path('contact/',views.contact),
     path('setting/',views.setting),
     path('files/',views.files),
     path('upload/',views.upload),
-   # path('encdec/',views.encdec),
+    path('encrypt/',views.enckey,name="key"),
+    path('encdec/',views.encdec,name="encdec"),
+    path('form/',views.get_name),
 ]

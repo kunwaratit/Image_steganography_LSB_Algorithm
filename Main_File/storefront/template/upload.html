@@ -2,33 +2,37 @@
 <section class="upload-section">
     <h1>Encrypter</h1>
     <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" id="file">
+        {% csrf_token %}
+        <input type="checkbox" name="encrypt" id="encrypt" onClick="encryptfile()">Generate Key
+        <input type="checkbox" name="stego" id="stego" onclick="stegofile()"> Stegnography
+        <input type="text" name="key" id="encryption-key" value="{{keyvalue}}" placeholder="encryption-key" disabled>
+        <p><i style="font-weight: lighter;">key is imp to decrypt so donot loose.</i></p>
+
+        <input type="file" name="document" id="file">
 
         <input type="text" name="key" id="file" placeholder="Message"><br>
-        <input type="checkbox" name="encrypt" id="encrypt" onclick="encryptfile()"> Encrypt to Gen Key
-        <input type="checkbox" name="stego" id="stego" onclick="stegofile()"> Stegnography
-        <input type="text" name="key" id="encryption-key" value="" placeholder="encryption-key" disabled>
-        <p><i style="font-weight: lighter;">key is imp to decrypt so donot loose.</i></p>
-        Upload Cover File <input type="file" name="file" id="file">
-        <button type="submit">Encrypt</button>
+        <div id="setgoimage" style="visibility:hidden;">Upload Cover File <input type="file" name="file" id="file">
+        </div>
+        <!--<button type="submit" onClick="location.href='{% url 'encdec' %}'">Encrypt</button>
+        --><button type="submit">Encrypt</button>
 
     </form>
+
 </section>
 <script>
     function encryptfile() {
         let checkbox = document.getElementById("encrypt");
-        let text = document.getElementById("encryption-key");
-
         if (checkbox.checked) {
-            text.value = "{{keyvalue}}";
+            location.href = "{% url 'key' %}";
+            checkbox.checked = checked;
         }
     }
     function stegofile() {
         let checkbox = document.getElementById("stego");
-        let text = document.getElementById("stegofile");
+        let text = document.getElementById("setgoimage");
 
         if (checkbox.checked) {
-            text.value = "{{keyvalue}}";
+            text.style.visibility = "visible";
         }
     }
 </script>
