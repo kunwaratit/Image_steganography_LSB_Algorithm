@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
   entry: './myapp/static/myapp/index.jsx', // Entry point of your React app
-  output: {a
-    path: path.resolve(__dirname, 'myapp/static/myapp'),
+  output: {
+    path: path.resolve(__dirname, 'static/Frontend/src'),
     filename: 'bundle.js',
   },
   module: {
