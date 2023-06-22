@@ -57,8 +57,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            #BASE_DIR,"template"
-            os.path.join(BASE_DIR,'template/Front_end/src')
+            BASE_DIR,"template"
+            #os.path.join(BASE_DIR,'template/Front_end/src')
             ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -131,6 +131,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS=[
-   # BASE_DIR,"static"
-    os.path.join(BASE_DIR, 'template/Front_end/src')
+    BASE_DIR,"static"
+   # os.path.join(BASE_DIR, 'template/Front_end/src')
 ]
