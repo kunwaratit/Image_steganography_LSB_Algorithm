@@ -94,8 +94,7 @@ def enckey(request):
      
 def encdec(request):
     
-    key=keyval()
-    print(key)
+    
     class Encryptor:
        
         def __init__(self, key):
@@ -122,7 +121,10 @@ def encdec(request):
 
             
 #  key = b'LEDMXIQBGNVOJRUI'
-    
+    data1 = os.urandom(16)
+    key=b64encode(data1).decode('utf-8')
+    data={}
+    data['keyvalue']=key
 
     enc = Encryptor(key)
     enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
@@ -145,4 +147,4 @@ def encdec(request):
         'title':'SSFS-Sign-Up',
     }
     data['keyvalue']=key'''
-    return render(request,"upload.html")
+    return render(request,"upload.html",data)
