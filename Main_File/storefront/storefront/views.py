@@ -91,7 +91,7 @@ def enckey(request):
     def keyval():
         return key
     return render(request,"upload.html",data)
-     
+   
 def encdec(request):
     
     
@@ -121,13 +121,56 @@ def encdec(request):
 
             
 #  key = b'LEDMXIQBGNVOJRUI'
+  #  data1 = os.urandom(16)
+  #  key=b64encode(data1).decode('utf-8')
+  #  data={}
+   # data['keyvalue']=key
+
+        def decrypt(self, ciphertext, key):
+            iv = ciphertext[:AES.block_size]
+            #key = key.encode('utf-8')
+            cipher = AES.new(key, AES.MODE_CBC, iv)
+            plaintext = cipher.decrypt(ciphertext[AES.block_size:])
+            return plaintext.rstrip(b"\0")
+            
+            
+
+        def decrypt_file(self, file_name):
+            with open("static/"+file_name, 'rb') as fo:
+                ciphertext = fo.read()
+            dec = self.decrypt(ciphertext, self.key)
+            with open("static/"+file_name[:-4], 'wb') as fo:
+                
+                fo.write(dec)
+            os.remove(file_name)
+        #key = b'LEDMXIQBGNVOJRUI'
+        #key = b'bjF02IT+Xo113ZylLMDoaA=='
+
     data1 = os.urandom(16)
     key=b64encode(data1).decode('utf-8')
     data={}
     data['keyvalue']=key
-
     enc = Encryptor(key)
-    enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+    print(key)
+    #enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+    x=0
+    while (x<5):
+            
+            choice = int(input("1. Press '1' to encrypt file.\n2. Press '2' to decrypt file.\n"))
+        
+            if choice == 1:
+                enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+            elif choice == 2:
+                enc.decrypt_file(str(input("Enter name of file to decrypt: ")))
+            else:
+                print("Please select a valid option!")
+            x+=1;    
+    return render(request,"upload.html",data)
+    #tLdiLGby6cntJ0aCekvswg==
+    #bjF02IT+Xo113ZylLMDoaA==
+    #run seperately for decode  
+    #enc = Encryptor(key)
+    #enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
 
 #  message1=input("enter message")
 # message=bytes(message1, 'utf-8')
@@ -147,4 +190,4 @@ def encdec(request):
         'title':'SSFS-Sign-Up',
     }
     data['keyvalue']=key'''
-    return render(request,"upload.html",data)
+    
