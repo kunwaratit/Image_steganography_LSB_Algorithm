@@ -30,5 +30,5 @@ from rest_framework import routers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', React2View.as_view(), name="appview"),
+    path('', React2View.as_view(), name="appview"),
 ]
