@@ -14,9 +14,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from xml.etree.ElementInclude import include
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+# from django.conf.urls.static import static
+from django.conf.urls import url
+from app import views
+
+from app.views import *
+from rest_framework import routers
+
+# route = routers.DefaultRouter()
+# route.register("", ReactView, basename="appview")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', React2View.as_view(), name="appview"),
 ]
