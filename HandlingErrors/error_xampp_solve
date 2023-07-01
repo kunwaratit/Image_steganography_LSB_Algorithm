@@ -1,5 +1,10 @@
+
 Problem:
-    xampp server stopped 
-    
-solution:
-    sudo apachectl stop
+    xampp server stopped
+    Solution:
+        sudo apachectl stop
+
+Problem:
+    kill the port when already used.
+    Solution:
+        sudo kill -9 $(sudo lsof -t -i:3000)
