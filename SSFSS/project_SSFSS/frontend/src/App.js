@@ -3,13 +3,13 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import React from 'react';
-import NavBar from './components/NavBar';
+//import NavBar from './components/NavBar';
 import {Routes,Route} from 'react-router-dom'
 import Navi from './components/Navi';
 
 import Home from './Home';
-import About from './About';
-import Nab from './Nab';
+
+
 
 
 
@@ -38,11 +38,10 @@ class App extends React.Component{
 
     <div> 
       <Navi/>
-      <Nab/>
       <>
   <Routes>
     <Route path='/home' element= {<Home />} />
-    <Route path='/about' element= {<About/>} />
+   
     
   </Routes>
   </>
@@ -50,15 +49,10 @@ class App extends React.Component{
       
       
       
-        <div> 
-          <div  className='border-bottom border-1' >
-          
-          <NavBar />
-
-        </div></div>
       
       <div> 
-      <header>Data</header>
+      <header><h1>Data From the database through the api
+      </h1></header>
        <hr/>
         {this.state.details.map((output,id)=>(
           <div key={id}>
