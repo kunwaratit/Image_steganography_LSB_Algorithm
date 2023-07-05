@@ -1,0 +1,4 @@
+Problem:
+    kill the port when already used.
+    Solution:
+        sudo kill -9 $(sudo lsof -t -i:3000)
