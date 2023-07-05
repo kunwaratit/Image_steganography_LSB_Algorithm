@@ -1,9 +1,17 @@
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios'
-import React from 'react'
-import NavBar from './components/NavBar'
+import axios from 'axios';
+import React from 'react';
+import NavBar from './components/NavBar';
+import {Routes,Route} from 'react-router-dom'
+import Navi from './components/Navi';
+
+import Home from './Home';
+import About from './About';
+import Nab from './Nab';
+
+
 
 
 class App extends React.Component{
@@ -28,12 +36,28 @@ class App extends React.Component{
   render(){
     return (
 
-    <div>
-        <div>
-          <NavBar />
-        </div>
+    <div> 
+      <Navi/>
+      <Nab/>
+      <>
+  <Routes>
+    <Route path='/home' element= {<Home />} />
+    <Route path='/about' element= {<About/>} />
+    
+  </Routes>
+  </>
       
-      <div>  
+      
+      
+      
+        <div> 
+          <div  className='border-bottom border-1' >
+          
+          <NavBar />
+
+        </div></div>
+      
+      <div> 
       <header>Data</header>
        <hr/>
         {this.state.details.map((output,id)=>(
