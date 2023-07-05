@@ -6,12 +6,12 @@ import React from 'react';
 //import NavBar from './components/NavBar';
 import {Routes,Route} from 'react-router-dom'
 import Navi from './components/Navi';
-
-import Home from './Home';
-
-
-
-
+import Home from './components/Home' 
+import Login from './components/Login';
+import Encrypt from './components/Encrypt';
+import Register from './components/Register';
+import Footer from './components/Footer';
+import Contact from './components/Contact';
 
 
 class App extends React.Component{
@@ -36,15 +36,20 @@ class App extends React.Component{
   render(){
     return (
 
-    <div> 
+      <> 
       <Navi/>
-      <>
+      
+<div>
   <Routes>
-    <Route path='/home' element= {<Home />} />
-   
+    <Route  path='/Home' element= {<Home/>} />
+    <Route exact path='/encrypt' element= {<Encrypt/>} />
+    <Route exact path='/contact' element= {<Contact/>} />
+
+    <Route exact path='/login' element= {<Login/>} />
+    <Route exact path='/register' element= {<Register/>} />
     
   </Routes>
-  </>
+ 
       
       
       
@@ -65,6 +70,8 @@ class App extends React.Component{
         ))
         }
       </div>
-      </div>)}
+      </div>
+       <Footer/>
+       </>)}
 }
 export default App;
