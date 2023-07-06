@@ -1,33 +1,71 @@
-import React, {useState} from "react"
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Validation from "./RegisterValidation";
 
-export const Register = (props) =>{
-    const [email, setEmail] = useState('');
-    const [pass, setPass] = useState('');
-    const [name, setName] = useState('');
+function Register() {
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    cpassword: "",
+  });
 
-    const handleSubmit = (e) =>{
-        e.preventDefault();
-        console.log(email);
-    }
+  const [errors, setErrors] = useState({});
 
+  const handleInput = (e) => {
+    setValues((prev) => ({ ...prev, [e.target.name]: [e.target.value] }));
+  };
 
-    return (
-        <div className="form-container">
-            
-        <form className="register-form" onSubmit={handleSubmit}>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setErrors(Validation(values));
+  };
+  return (
+    <div className="form-container">
+      <form className="register-form" onSubmit={handleSubmit}>
         <h1> Sign up </h1>
-            <input value={name} name="name" id="name" placeholder="Full name" type="text" />
-            
-            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Your email" id="email"/>
-            
-            <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="Password" id="password"/>
-            <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="Confirm Password" id="confirm-password"/>
-            <button type="submit">Sign up</button>
-        </form>
-        <button className="link-btn" onClick={() => props.onFormSwitch('login')}>Already have an account? Login here.</button>
-        
-        </div>
-    )
+        <input
+          name="name"
+          placeholder="Full name"
+          type="text"
+          onChange={handleInput}
+        />
+        {errors.name && <span className="text-danger">{errors.name}</span>}
+
+        <input
+          name="email"
+          type="email"
+          placeholder="Your email"
+          onChange={handleInput}
+        />
+        {errors.email && <span className="text-danger">{errors.email}</span>}
+
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={handleInput}
+        />
+        {errors.password && (
+          <span className="text-danger">{errors.password}</span>
+        )}
+        <input
+          name="cpassword"
+          type="password"
+          placeholder="Confirm Password"
+          onChange={handleInput}
+        />
+        {errors.cpassword && (
+          <span className="text-danger">{errors.cpassword}</span>
+        )}
+        <button type="submit">Sign up</button>
+      </form>
+      <Link to="/login" className="link-btn">
+        {" "}
+        Already have an account? Register here
+      </Link>
+    </div>
+  );
 }
 
 export default Register;
