@@ -1,0 +1,19 @@
+@import 'custom.scss';
+
+my-custom-button{
+    color: $primary_color!important;
+}
+.navColor {
+    background-color: #a5b8ff !important;
+}
+.nav-Link{
+    color: black  !important;
+}
+.nav-Link:active{
+    color: white !important;
+}.nav-Link:hover{
+    color: $primary_color !important;
+}
+.logoO {
+    font-size: 1.5rem;
+}

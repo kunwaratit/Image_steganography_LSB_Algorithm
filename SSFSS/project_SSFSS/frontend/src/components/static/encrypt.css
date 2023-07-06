@@ -1,0 +1,39 @@
+input[type="text"] {
+    width: 92%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #041574;
+    border-radius: 4px;
+}
+
+.upload-section {
+    padding: 20px;
+}
+
+.upload-section h1 {
+    margin-bottom: 20px;
+}
+
+.upload-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.upload-form input[type="file"] {
+    margin-bottom: 10px;
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #002147;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #00162d;
+}

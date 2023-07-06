@@ -1,0 +1,94 @@
+{% include 'header.html' %}
+<section class="upload-section">
+    <h1>Encrypter</h1>
+    <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="checkbox" name="encrypt" id="encrypt" onClick="encryptfile()">Generate Key
+        <input type="checkbox" name="stego" id="stego" onclick="stegofile()"> Stegnography
+        <input type="text" name="key" id="encryption-key" value="{{keyvalue}}" placeholder="encryption-key" disabled>
+        <p><i style="font-weight: lighter;">key is imp to decrypt so donot loose.</i></p>
+
+        <input type="file" name="document" id="file">
+
+        <input type="text" name="key" id="file" placeholder="Message"><br>
+        <div id="setgoimage" style="visibility:hidden;">Upload Cover File <input type="file" name="file" id="file">
+        </div>
+        <button type="submit" onClick="location.href='{% url 'encdec' %}'">Encrypt</button>
+        <!-- <button type="submit">Encrypt</button>
+-->
+    </form>
+
+</section>
+<script>
+    function encryptfile() {
+        let checkbox = document.getElementById("encrypt");
+        if (checkbox.checked) {
+            location.href = "{% url 'key' %}";
+            checkbox.checked = checked;
+        }
+    }
+    function stegofile() {
+        let checkbox = document.getElementById("stego");
+        let text = document.getElementById("setgoimage");
+
+        if (checkbox.checked) {
+            text.style.visibility = "visible";
+        }
+    }
+</script>
+
+<section class="upload-section">
+    <h1>Upload File</h1>
+    <form class="upload-form" action="#" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file">
+        <input type="text" name="key" id="file" placeholder="encryption-key">
+        <button type="submit">Upload</button>
+        <br>
+
+        <input type="file" name="file" id="file">
+        <input type="text" name="key" id="file" placeholder="encryption-key" hidden>
+        <button type="submit">Upload with $t3g0</button>
+    </form>
+</section>
+{% include 'footer.html' %}
+<style>
+    input[type="text"] {
+        width: 92%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #041574;
+        border-radius: 4px;
+    }
+
+    .upload-section {
+        padding: 20px;
+    }
+
+    .upload-section h1 {
+        margin-bottom: 20px;
+    }
+
+    .upload-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .upload-form input[type="file"] {
+        margin-bottom: 10px;
+    }
+
+    button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #002147;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #00162d;
+    }
+</style>
