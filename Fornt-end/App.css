@@ -1,0 +1,72 @@
+.App {
+  text-align: center;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+form-container,
+.login-form {
+  width: 300px;
+  margin: 18vh auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(22, 13, 1, 0.541);
+}
+
+form-container,
+.register-form {
+  width: 400px;
+  margin: 65px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #002147;
+}
+
+input {
+  width: 92%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #041574;
+  border-radius: 4px;
+}
+
+button {
+  width: 92%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #041574;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #ff6600;
+}
+
+.link-btn {
+  color: black;
+  width: 92%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #041574;
+  border-radius: 4px;
+  background: none;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  background-color: #ff6600;
+}
+
+.text-danger {
+  color: red;
+  font-size: small;
+}
