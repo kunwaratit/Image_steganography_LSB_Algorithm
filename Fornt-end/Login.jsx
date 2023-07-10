@@ -12,6 +12,7 @@ function Login() {
 
   const handleInput = (e) => {
     setValues((prev) => ({ ...prev, [e.target.name]: [e.target.value] }));
+    console.log(e.target.values);
   };
 
   const handleSubmit = (e) => {
