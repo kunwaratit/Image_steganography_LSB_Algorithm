@@ -7,13 +7,16 @@ function Register() {
     name: "",
     email: "",
     password: "",
-    cpassword: "",
+    confirmpassword: "",
   });
 
   const [errors, setErrors] = useState({});
 
   const handleInput = (e) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: [e.target.value] }));
+    e.preventDefault();
+    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+    console.log(e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -31,7 +34,6 @@ function Register() {
           onChange={handleInput}
         />
         {errors.name && <span className="text-danger">{errors.name}</span>}
-
         <input
           name="email"
           type="email"
@@ -39,7 +41,6 @@ function Register() {
           onChange={handleInput}
         />
         {errors.email && <span className="text-danger">{errors.email}</span>}
-
         <input
           name="password"
           type="password"
@@ -50,13 +51,13 @@ function Register() {
           <span className="text-danger">{errors.password}</span>
         )}
         <input
-          name="cpassword"
+          name="confirmpassword"
           type="password"
           placeholder="Confirm Password"
           onChange={handleInput}
         />
-        {errors.cpassword && (
-          <span className="text-danger">{errors.cpassword}</span>
+        {errors.confirmpassword && (
+          <span className="text-danger">{errors.confirmpassword}</span>
         )}
         <button type="submit">Sign up</button>
       </form>

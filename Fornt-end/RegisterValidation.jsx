@@ -1,8 +1,7 @@
 function Validation(values) {
   let error = {};
   const email_pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const password_pattern =
-    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+  const password_pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
 
   if (values.name === "") {
     error.name = "name should not be empty";
@@ -27,10 +26,10 @@ function Validation(values) {
       "passworld should contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character";
   }
 
-  if (values.password !== values.cPassword) {
-    error.cpassword = "password didnt match";
+  if (values.password !== values.confirmpassword) {
+    error.confirmpassword = "Password Didn't Match";
   } else {
-    error.cpassword = "";
+    error.confirmpassword = "";
   }
   return error;
 }
