@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # 'app.apps.appConfig',
     'rest_framework',
     'corsheaders',
+    'knox',
 ]
 
 MIDDLEWARE = [
