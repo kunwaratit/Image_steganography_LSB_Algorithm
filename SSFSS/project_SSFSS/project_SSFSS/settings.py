@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    
     # 'app.apps.appConfig',
     'rest_framework',
     'corsheaders',
@@ -96,14 +97,10 @@ WSGI_APPLICATION = 'project_SSFSS.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'check',
-        'PASSWORD': '',
-        'USER': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-    }
-}
+        'ENGINE': 'djongo',
+        
+        'NAME': 'ssfss',
+}}
 
 
 # Password validation
