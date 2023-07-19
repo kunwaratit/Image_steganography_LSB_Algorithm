@@ -1,10 +1,18 @@
+
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework import permissions
+from django.contrib.auth import login
+# from .serializers import UserSerializer, RegisterSerializer
+
+from rest_framework import generics, permissions
 from django.shortcuts import render
 from . models import *
 from . serializers import *
-# from rest_framework import viewsets
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 # Create your views here.
+
 
 class ReactView(APIView):
     def get(self, request):
@@ -32,8 +40,3 @@ class React2View(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-
-
-
-
-

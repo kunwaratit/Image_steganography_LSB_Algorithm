@@ -15,27 +15,8 @@ import Contact from './components/Contact';
 
 
 class App extends React.Component{
-
-  state={details:[],}
-
-  componentDidMount(){
-
-    let data;
-    axios.get('http://localhost:8000')
-      .then(res=> {
-        data=res.data;
-        this.setState({
-          details: data
-        });
-  
-      })
-      .catch(err=>{ })
-
-
-  }
   render(){
     return (
-
       <> 
       <Navi/>
       
@@ -59,7 +40,7 @@ class App extends React.Component{
       <header><h1>Data From the database through the api
       </h1></header>
        <hr/>
-        {this.state.details.map((output,id)=>(
+     {/*   {this.state.details.map((output,id)=>(
           <div key={id}>
             <div>
               <h2>{output.employee}</h2>
@@ -67,8 +48,8 @@ class App extends React.Component{
             </div> 
           </div>
           
-        ))
-        }
+     ))}*/}
+        
       </div>
       </div>
        <Footer/>

@@ -14,12 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+
 from xml.etree.ElementInclude import include
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-# from django.conf.urls.static import static
-from django.conf.urls import url
+from django.conf.urls.static import static
+from django.urls import re_path as url
 from app import views
 
 from app.views import *
@@ -30,5 +32,8 @@ from rest_framework import routers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', React2View.as_view(), name="appview"),
+    # path('', React2View.as_view(), name="appview"),
+    # path('', include('app.urls')),
+    path('login/', include('accounts.urls')),
+    path('api/', include('registration.urls')),
 ]
