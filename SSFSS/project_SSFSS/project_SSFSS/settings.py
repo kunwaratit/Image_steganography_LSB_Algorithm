@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'project_SSFSS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'check',
+        'NAME': 'atit12',
         'PASSWORD': '',
         'USER': 'root',
         'HOST': '127.0.0.1',
