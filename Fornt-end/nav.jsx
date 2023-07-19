@@ -11,13 +11,16 @@ function Navbar() {
           <Link to="/" className="site-logo">
             <img src={logo} alt="logo" className="logo" />
           </Link>
-          <ul>
-            <CustomLink to="/upload">Upload</CustomLink>
-            <CustomLink to="/contact">Contact</CustomLink>
 
-            <CustomLink to="/login">Login</CustomLink>
-            <CustomLink to="/signup">Signup</CustomLink>
-          </ul>
+          <div className="nav-btn">
+            <ul>
+              <CustomLink to="/upload">Upload</CustomLink>
+              <CustomLink to="/contact">Contact</CustomLink>
+
+              <CustomLink to="/login">Login</CustomLink>
+              <CustomLink to="/signup">Signup</CustomLink>
+            </ul>
+          </div>
         </nav>
       </header>
       <hr />

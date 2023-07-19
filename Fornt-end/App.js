@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
 import Login from "./Login";
 import Register from "./Register";
 import Upload from "./Upload";
 import Home from "./Home";
 import Contact from "./Contact";
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Navbar from "./nav";
 
 function App() {

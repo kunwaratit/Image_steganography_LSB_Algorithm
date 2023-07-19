@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    
     'accounts',
     'registration',
     # 'app.apps.appConfig',
@@ -106,7 +107,7 @@ WSGI_APPLICATION = 'project_SSFSS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'atit12',
+        'NAME': 'check',
         'PASSWORD': '',
         'USER': 'root',
         'HOST': '127.0.0.1',
