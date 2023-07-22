@@ -68,3 +68,23 @@ class LoginAPI(APIView):
                 print("Authentication failed")
                 return Response({'error': 'Invalid user ID or password'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import csrf_protect
+class LogoutAPI(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # Simply delete the token to force a logout
+        request.user.auth_token.delete()
+        return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
+from django.contrib.auth import logout
+from django.http import JsonResponse
+@csrf_protect
+def logout_view(request):
+    logout(request)
+    return JsonResponse({'message': 'Logged out successfully.'})

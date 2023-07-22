@@ -1,36 +1,43 @@
 import React, { useState } from "react";
 import './static/Login.css';
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from 'axios'; 
+
 function Login() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
   const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
-    setError("")
+    setError("");
+
     axios.post('http://localhost:8000/api/login/', formData, {
       headers: {
         'Content-Type': 'application/json'
       }
     })
       .then(response => {
-        console.log(response.data); // Handle the response from the server, e.g., show a success message
+        console.log(response.data);
+        const token = response.data.Token.access;
+        console.log(token)
+        if (token) {
+          // Store the token in local storage
+          localStorage.setItem('authToken', token);
+          setIsAuthenticated(true);
+        }
       })
       .catch(error => {
-        console.error(error); // Log the error for debugging purposes
-        // Handle the error response from the server, e.g., show an error message
+        console.error(error);
         if (error.response && error.response.data && error.response.data.detail) {
           setError(error.response.data.detail);
         } else {
           setError("An error occurred while logging in. Please try again later.");
-        } });
-    // Simulate login logic (replace with actual login API call)
-  
+        }
+      });
   };
 
   const handleChange = (e) => {
@@ -41,15 +48,19 @@ function Login() {
   return (
     <div className="login-container">
       <h1>Login</h1>
-      {error && <div className="error-message">{error}</div>}
-      <form className="login-form" onSubmit={handleLogin}>
-        <input type="text" name="email" placeholder="Email or password" value={formData.email} onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-        <button type="submit">Login</button>
-      </form>
-      <div className="links">
-        <Link to="/Register">Sign up</Link> | <a href="#">Forgot password?</a>
-      </div>
+      {isAuthenticated ? <div>You are already logged in.</div> : (
+        <>
+          {error && <div className="error-message">{error}</div>}
+          <form className="login-form" onSubmit={handleLogin}>
+            <input type="text" name="email" placeholder="Email or password" value={formData.email} onChange={handleChange} />
+            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+            <button type="submit">Login</button>
+          </form>
+          <div className="links">
+            <Link to="/Register">Sign up</Link> | <button onClick={() => console.log("Forgot password?")}>Forgot password?</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

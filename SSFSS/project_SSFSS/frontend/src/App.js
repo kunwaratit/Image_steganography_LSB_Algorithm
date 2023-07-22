@@ -12,7 +12,7 @@ import Encrypt from './components/Encrypt';
 import Register from './components/Register';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
-
+import Logout from './components/Logout';
 
 class App extends React.Component{
   render(){
@@ -25,8 +25,8 @@ class App extends React.Component{
     <Route  path='/Home' element= {<Home/>} />
     <Route exact path='/encrypt' element= {<Encrypt/>} />
     <Route exact path='/contact' element= {<Contact/>} />
-
-    <Route exact path='/login' element= {<Login/>} />
+    
+  <Route exact path='/login' element= {<Login/>} />
     <Route exact path='/register' element= {<Register/>} />
     
   </Routes>

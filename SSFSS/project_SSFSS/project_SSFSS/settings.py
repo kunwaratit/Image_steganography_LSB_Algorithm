@@ -77,14 +77,20 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 
 REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': [
     'rest_framework.permissions.AllowAny',
 ]}
-
+CSRF_COOKIE_NAME = "csrftoken"
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    # Add more allowed origins if needed
+]
+CORS_ALLOW_CREDENTIALS = True
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
