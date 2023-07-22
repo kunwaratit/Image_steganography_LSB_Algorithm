@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import './static/register.css';
 import { Link } from "react-router-dom";
 import axios from "axios"; // Import the axios library
+import Validation from "./RegisterValidation";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -12,7 +13,8 @@ function Register() {
     date_of_birth: "",
     password: ""
   });
-  const formatDate = (dateString) => {
+
+{/*  const formatDate = (dateString) => {
     // Function to format the date as "YYYY-MM-DD"
     const dateObject = new Date(dateString);
     const year = dateObject.getFullYear();
@@ -20,21 +22,21 @@ function Register() {
     const day = String(dateObject.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+*/}const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (name === "date_of_birth") {
-      // Format the date as "YYYY-MM-DD" before setting it in the formData
-      const formattedDate = formatDate(value);
-      setFormData({ ...formData, [name]: formattedDate });
-    }else {
-      setFormData({ ...formData, [name]: value });
-    }
     
+    
+      setFormData({ ...formData, [name]: value });
+        
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErrors(Validation(formData));
+    
+    
     axios.post('http://localhost:8000/api/register/', formData, {
       headers: {
         'Content-Type': 'application/json'
@@ -53,12 +55,27 @@ function Register() {
       <div className="signup-container">
         <h1>Sign Up</h1>
         <form className="signup-form" onSubmit={handleSubmit}>
+          {errors.first_name && <span className="text-danger">{errors.first_name}</span>}
           <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} />
-          <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} />
+           <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} />
+           {errors.email && <span className="text-danger">{errors.email}</span>}
           <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+          
           <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} />
-          <input type="date" name="date_of_birth" placeholder="Date of Birth" value={formData.date_of_birth} onChange={handleChange} />
+          {errors.password && (
+          <span className="text-danger">{errors.password}</span>
+        )}
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+          {errors.confirmpassword && (
+          <span className="text-danger">{errors.confirmpassword}</span>
+        )}
+        <input
+          name="confirmpassword"
+          type="password"
+          placeholder="Confirm Password"
+          onChange={handleChange}
+        />
+        
           <button type="submit">Sign Up</button>
         </form>
         <div className="login-link">
