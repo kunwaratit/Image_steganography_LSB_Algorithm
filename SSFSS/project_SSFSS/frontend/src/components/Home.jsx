@@ -1,19 +1,27 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import './static/Home.css';
+import Contact from "./Contact"; 
 function Home(){
     return (
         <>
   
   <div style={{ backgroundColor: "#ffffffdc", margin: "0px 5vw", padding: 50 }}>
-    <section className="hero-section">
-      <div className="hero-content">
+    <section className="hero-section" id="main">
+      <div className="hero-content" >
         <h1>Secure File System</h1>
+
+        <div style={{ height: "20em" }}>
+
+        </div>
         <p>Protect and manage your files with ease.</p>
         <Link to="/Login" className="cta-button">Get Started</Link>
        
       </div>
     </section>
+
+
+
     <section className="features-section">
       <div className="feature">
         <h2>Secure File Storage</h2>
@@ -37,7 +45,7 @@ function Home(){
         </p>
       </div>
     </section>
-    <section className="pricing-section">
+    <section className="pricing-section" id="pricing">
       <h2>Pricing</h2>
       <p>
         Choose a plan that suits your needs and start securing your files today.
@@ -71,6 +79,11 @@ function Home(){
           </a>
         </div>
       </div>
+    </section>
+    
+    <section id="contact">
+    <br />  
+    <Contact />
     </section>
   </div>
 </>

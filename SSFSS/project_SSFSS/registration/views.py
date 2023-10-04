@@ -1,4 +1,13 @@
 # views.py
+from django.contrib.auth.models import AnonymousUser
+from rest_framework import permissions
+from rest_framework.authtoken.models import Token
+from django.middleware.csrf import get_token
+from django.contrib.auth import logout
+from django.views.decorators.csrf import csrf_protect
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from django.http import JsonResponse
 from .serializers import UserSerializer, LoginSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +17,8 @@ from django.contrib.auth.models import User
 from .renderers import UserRenderer
 
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from django.utils import timezone
 
 # Generate token manually
 
@@ -58,7 +69,15 @@ class LoginAPI(APIView):
                 email=email, password=password)
 
             if authenticated_user is not None:
-                # Authentication successful
+                # Check if the user already has an active session
+             #       existing_session = UserSession.objects.filter(user=authenticated_user, is_logged_in=True).first()
+             #       if existing_session:
+                # User is already logged in; prevent login
+              #          return Response({'error': 'User is already logged in'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Create a new session record
+             #       user_session = UserSession(user=authenticated_user, login_time=timezone.now())
+             #       user_session.save()
 
                 print("Authentication successful")
                 token = get_tokens_for_user(authenticated_user)
@@ -68,23 +87,42 @@ class LoginAPI(APIView):
                 print("Authentication failed")
                 return Response({'error': 'Invalid user ID or password'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from django.views.decorators.csrf import csrf_protect
+
+
+# from .models import UserSession
+
+
+def get_csrf_token(request):
+    # Get the CSRF token
+    csrf_token = get_token(request)
+
+    # Set the CSRF token in a cookie
+    response = JsonResponse({'csrf_token': csrf_token})
+    response.set_cookie('csrftoken', csrf_token)
+
+    return response
+
+
 class LogoutAPI(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        # Simply delete the token to force a logout
-        request.user.auth_token.delete()
+        if not isinstance(request.user, AnonymousUser):
+            # Delete the user's authentication token to log them out
+            # request.auth.delete()
+            # token = request.META['HTTP_AUTHORIZATION']
+            # print(token)
+            # Update the UserSession to mark the user as logged out
+            Token.objects.filter(user=request.user).delete()
+
         return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
-from django.contrib.auth import logout
-from django.http import JsonResponse
+
+
 @csrf_protect
 def logout_view(request):
     logout(request)
+
+    # Update the UserSession to mark the user as logged out
+
     return JsonResponse({'message': 'Logged out successfully.'})

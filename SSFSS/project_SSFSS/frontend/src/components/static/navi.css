@@ -1,8 +1,9 @@
 * {
     padding: 0px;
     margin: 0px;
-
+    scroll-behavior: smooth;
 }
+
 
 body {
     margin: 0;
@@ -22,6 +23,14 @@ header {
 }
 
 .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar {
+    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;

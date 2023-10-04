@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'registration',
+    'EnDecrypt',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders',
@@ -62,6 +64,12 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
+
+    # Set the desired expiration time for access tokens
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    # Optional: Set the refresh token lifetime
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+
 }
 
 
@@ -184,3 +192,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'registration.User'
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760

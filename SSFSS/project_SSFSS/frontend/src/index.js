@@ -1,20 +1,21 @@
 import React from 'react';
-
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-
+import { useAuth } from './components/AuthContext'; // Import useAuth hook
+import { AuthProvider } from './components/AuthContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <div>
-    
-  
+
       <React.StrictMode>
-      <BrowserRouter>
-           <App />
-       </BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
+            <App/>
+          </AuthProvider>  
+        </BrowserRouter>  
       </React.StrictMode>
    
   </div>

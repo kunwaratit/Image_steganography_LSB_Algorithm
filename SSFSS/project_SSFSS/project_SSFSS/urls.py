@@ -29,4 +29,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/', include('registration.urls')),
+    path('app/', include('EnDecrypt.urls')),
 ]

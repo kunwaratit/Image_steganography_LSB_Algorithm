@@ -1,0 +1,839 @@
+import React from 'react';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom/client';
+
+import {
+    BrowserRouter
+}
+
+from 'react-router-dom';
+
+import {
+    useAuth
+}
+
+from './components/AuthContext'; // Import useAuth hook
+
+import {
+    AuthProvider
+}
+
+from './components/AuthContext';
+const root=ReactDOM.createRoot(document.getElementById('root'));
+root.render(<div> <React.StrictMode> <BrowserRouter> <AuthProvider> <App/> </AuthProvider> </BrowserRouter> </React.StrictMode> </div>);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
+import React from 'react';
+
+//import NavBar from './components/NavBar';
+import {
+    Routes, Route, Router
+}
+
+from 'react-router-dom'
+import Navi from './components/Navi';
+import Home from './components/Home'
+import Login from './components/Login';
+import Encrypt from './components/Encrypt';
+import Register from './components/Register';
+import Footer from './components/Footer';
+import Contact from './components/Contact';
+
+import Logout from './components/Logout';
+
+import {
+    AuthProvider
+}
+
+from './components/AuthContext'; // Import the AuthProvider
+
+
+import {
+    useEffect
+}
+
+from 'react';
+
+class App extends React.Component {
+
+    render() {
+
+        return (<AuthProvider> <Navi/> <div> <Routes> <Route path='/Home'element= {
+                <Home/>
+            }
+
+            /> <Route exact path='/Encrypt'element= {
+                <Encrypt/>
+            }
+
+            /> <Route exact path='/Contact'element= {
+                <Contact/>
+            }
+
+            /> <Route exact path='/Login'element= {
+                <Login/>
+            }
+
+            /> <Route exact path='/Register'element= {
+                <Register/>
+            }
+
+            /> </Routes> <div> <header><h1>Data From the database through the api </h1></header> <hr/> {
+                /*   {this.state.details.map((output,id)=>(
+          <div key={id}>
+            <div>
+              <h2>{output.employee}</h2>
+              <h2>{output.department}</h2>
+            </div> 
+          </div>
+          
+     ))}*/
+            }
+
+            </div> </div> <Footer/> </AuthProvider>)
+    }
+}
+
+export default App;
+
+import React, {
+    useState
+}
+
+from "react";
+import './static/register.css';
+
+import {
+    Link
+}
+
+from "react-router-dom";
+import axios from "axios"; // Import the axios library
+import Validation from "./RegisterValidation";
+
+function Register() {
+    const [formData, setFormData]=useState( {
+            first_name: "",
+            last_name: "",
+            email: "",
+            phone_number: "",
+            date_of_birth: "",
+            password: ""
+        }
+
+    );
+
+        {
+        /*  const formatDate = (dateString) => {
+    // Function to format the date as "YYYY-MM-DD"
+    const dateObject = new Date(dateString);
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObject.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+*/
+    }
+
+    const [errors, setErrors]=useState( {}
+
+    );
+
+    const handleChange=(e)=> {
+        const {
+            name, value
+        }
+
+        =e.target;
+
+
+        setFormData( {
+                ...formData, [name]: value
+            }
+
+        );
+
+    }
+
+    ;
+
+    const handleSubmit=(e)=> {
+        e.preventDefault();
+        setErrors(Validation(formData));
+
+
+        axios.post('http://localhost:8000/api/register/', formData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+        ) .then(response=> {
+                console.log(response.data); // Handle the response from the server, e.g., show a success message
+            }
+
+        ) .catch(error=> {
+                console.error(error); // Handle the error response from the server, e.g., show an error message
+            }
+
+        );
+    }
+
+    ;
+
+    return (<div height="70%"> <div className="signup-container"> <h1>Sign Up</h1> <form className="signup-form"onSubmit= {
+            handleSubmit
+        }
+
+        > {
+            errors.first_name && <span className="text-danger"> {
+                errors.first_name
+            }
+
+            </span>
+        }
+
+        <input type="text"name="first_name"placeholder="First Name"value= {
+            formData.first_name
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> <input type="text"name="last_name"placeholder="Last Name"value= {
+            formData.last_name
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> {
+            errors.email && <span className="text-danger"> {
+                errors.email
+            }
+
+            </span>
+        }
+
+        <input type="email"name="email"placeholder="Email"value= {
+            formData.email
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> <input type="text"name="phone_number"placeholder="Phone"value= {
+            formData.phone_number
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> {
+            errors.password && (<span className="text-danger"> {
+                    errors.password
+                }
+
+                </span>)
+        }
+
+        <input type="password"name="password"placeholder="Password"value= {
+            formData.password
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> {
+            errors.confirmpassword && (<span className="text-danger"> {
+                    errors.confirmpassword
+                }
+
+                </span>)
+        }
+
+        <input name="confirmpassword"
+        type="password"
+        placeholder="Confirm Password"
+
+        onChange= {
+            handleChange
+        }
+
+        /> <button type="submit">Sign Up</button> </form> <div className="login-link"> <p> Already have an account? <Link to="/Login">Log in</Link> </p> </div> </div> </div>);
+}
+
+export default Register;
+
+import {
+    NavLink
+}
+
+from 'react-router-dom';
+import './static/navi.css';
+import logo from './static/logo5.png';
+import Logout from "./Logout";
+
+import React, {
+    useState, useEffect
+}
+
+from "react";
+
+import {
+    getAuthToken
+}
+
+from "./utils";
+import Login from './Login';
+
+function Navi() {
+    const [isAuthenticated, setIsAuthenticated]=useState(false);
+
+    useEffect(()=> {
+            // Check if the user has a valid authentication token in localStorage
+            const token=localStorage.getItem('authToken'); // Replace 'authToken' with your token key
+            const userIsAuthenticated= ! !token; // Convert token to a boolean value
+            setIsAuthenticated(userIsAuthenticated);
+        }
+
+        , []);
+
+    const handleScrollToPricing=()=> {
+        const PSection=document.getElementById("pricing");
+
+        if (PSection) {
+            PSection.scrollIntoView( {
+                    behavior: "smooth"
+                }
+
+            );
+        }
+    }
+
+    ;
+
+    const handleScrollToContact=()=> {
+        const CSection=document.getElementById("contact");
+
+        if (CSection) {
+            CSection.scrollIntoView( {
+                    behavior: "smooth"
+                }
+
+            );
+        }
+    }
+
+    ;
+
+    return (<div> <title> {
+            /*{title}*/
+        }
+
+        </title> <header> <nav className="navbar"style= {
+                {
+                position: "sticky", top: "0", zIndex: "1000"
+            }
+        }
+
+        > <div className="navbar-logo"> <NavLink to="/Home"className="logo"> <img src= {
+            logo
+        }
+
+        style= {
+                {
+                padding: '0px'
+            }
+        }
+
+        />SteganoGraphic Secure File Storage System </NavLink> </div> <ul className="navbar-items"> <li className=""><NavLink to="/Home">Home</NavLink></li> <li className=""><NavLink to="/Home/#pricing"onClick= {
+            handleScrollToPricing
+        }
+
+        >Plans</NavLink></li> <li className=""><NavLink to="/Home/#contact"onClick= {
+            handleScrollToContact
+        }
+
+        >Contact</NavLink></li> {
+            isAuthenticated ? ( // Render the Logout component when the user is authenticated
+
+                <> <li className=""><NavLink to="/Encrypt">Upload</NavLink></li> <li className=""><NavLink to="/Home">Files</NavLink></li> <li className=""><NavLink to="/Setting">Settings</NavLink></li> <li className="atit"style= {
+                        {
+                        width:"75px"
+                    }
+                }
+
+                ><Logout/></li> </>) :(<><li className=""><NavLink to="/Login">Login</NavLink></li> <li className=""><NavLink to="/Register">Register</NavLink></li> </>)
+        }
+
+        </ul> </nav> </header> <style> .page-content {
+            /* Add styles such as min-height to ensure scrolling works properly */
+            /* Example padding */
+        }
+
+        </style> <div style= {
+                {
+                backgroundColor: '#f1f1f1'
+            }
+        }
+
+        > <hr style= {
+                {
+                margin: '0px'
+            }
+        }
+
+        /> </div> </div>);
+}
+
+export default Navi;
+
+import {
+    useNavigate
+}
+
+from 'react-router-dom';
+import axios from 'axios';
+
+import React, {
+    useState, useEffect
+}
+
+from 'react';
+
+import {
+    useAuth
+}
+
+from './AuthContext'; // Import useAuth hook
+
+import {
+    getCookie
+}
+
+from './utils';
+
+import {
+    useHistory
+}
+
+from "react-router-dom";
+
+function Logout() {
+    const {
+        logout, isAuthenticated
+    }
+
+    =useAuth();
+    const [loggingOut, setLoggingOut]=useState(false);
+    const navigate=useNavigate();
+
+
+    // const [isAuthenticated, setIsAuthenticated] = useState(false); // Define isAuthenticated
+
+
+    const handleLogout=()=> {
+        if ( !loggingOut) {
+            setLoggingOut(true);
+            console.log('CSRF Token:', getCookie('csrftoken'));
+            // Clear any authentication data from local storage
+            localStorage.removeItem('authToken'); // Replace with the actual item name
+            // Other items you want to remove, e.g., user info, etc.
+
+            axios.post('http://localhost:8000/api/logout/', null, {
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'), // Replace getCookie with your method to get the CSRF token from the cookies
+                        'Content-Type': 'application/json',
+                    }
+
+                    ,
+                    withCredentials: true, // Include credentials to send the CSRF token
+                }
+
+            ) .then(response=> {
+
+                    logout(); // Set isAuthenticated to false on logout
+
+                    console.log(response.data); // Handle the logout response from the server, e.g., show a success message
+                    // Clear any authentication data from local storage or cookies, e.g., token, user info, etc.
+                    // Redirect the user to the login page or perform any other desired action
+                    navigate('/Home');
+                }
+
+            ) .catch(error=> {
+                    console.error(error); // Log the error for debugging purposes
+                    // Handle the error response from the server, if needed
+                }
+
+            ) .finally(()=> {
+                    setLoggingOut(false); // Reset the state to allow subsequent logout attempts
+                }
+
+            );
+
+        }
+    }
+
+    ;
+
+    return (<div> <button onClick= {
+            handleLogout
+        }
+
+        disabled= {
+            loggingOut
+        }
+
+        > {
+            loggingOut ? 'Logging Out...' : 'Logout'
+        }
+
+        </button> </div>);
+}
+
+export default Logout;
+
+import React, {
+    useState
+}
+
+from "react";
+import './static/Login.css';
+
+import {
+    Link, useNavigate
+}
+
+from "react-router-dom";
+import axios from 'axios';
+
+import {
+    getCookie
+}
+
+from './utils';
+
+import {
+    useAuth
+}
+
+from './AuthContext'; // Import useAuth hook
+
+function Login() {
+    const {
+        login
+    }
+
+    =useAuth();
+
+    const [formData, setFormData]=useState( {
+            email: "",
+            password: ""
+        }
+
+    );
+    const [error, setError]=useState("");
+
+    const {
+        setIsAuthenticated
+    }
+
+    =useAuth();
+    const navigate=useNavigate();
+
+    const handleLogin=(e)=> {
+        e.preventDefault();
+        setError("");
+
+        axios.post('http://localhost:8000/api/login/', formData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+        ) .then(response=> {
+                const token=response.data.Token.access;
+
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                    setIsAuthenticated(true);
+                    navigate('/Home');
+                }
+            }
+
+        ) .catch(error=> {
+                console.error(error);
+
+                if (error.response && error.response.data && error.response.data.detail) {
+                    setError(error.response.data.detail);
+                }
+
+                else {
+                    setError("An error occurred while logging in. Please try again later.");
+                }
+            }
+
+        );
+    }
+
+    ;
+
+    const handleChange=(e)=> {
+        const {
+            name, value
+        }
+
+        =e.target;
+
+        setFormData( {
+                ...formData, [name]: value
+            }
+
+        );
+    }
+
+    ;
+
+    return (<div className="login-container"> <h1>Login</h1> {
+            error && <div className="error-message"> {
+                error
+            }
+
+            </div>
+        }
+
+        <form className="login-form"onSubmit= {
+            handleLogin
+        }
+
+        > <input type="text"name="email"placeholder="Email or password"value= {
+            formData.email
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> <input type="password"name="password"placeholder="Password"value= {
+            formData.password
+        }
+
+        onChange= {
+            handleChange
+        }
+
+        /> <button type="submit">Login</button> </form> <div className="links"> <Link to="/Register">Sign up</Link> | <button onClick= {
+            ()=> console.log("Forgot password?")
+        }
+
+        >Forgot password?</button> </div> </div>);
+}
+
+export default Login;
+import React from "react";
+
+import {
+    Link
+}
+
+from "react-router-dom";
+import './static/Home.css';
+import Contact from "./Contact";
+
+function Home() {
+    return (<> <div style= {
+                {
+                backgroundColor: "#ffffffdc", margin: "0px 5vw", padding: 50
+            }
+        }
+
+        > <section className="hero-section"> <div className="hero-content"> <h1>Secure File System</h1> <div style= {
+                {
+                height: "20em"
+            }
+        }
+
+        > </div> <p>Protect and manage your files with ease.</p> <Link to="/Login"className="cta-button">Get Started</Link> </div> </section> <section className="features-section"> <div className="feature"> <h2>Secure File Storage</h2> <p> Store your files in a highly secure environment with advanced encryption technology. </p> </div> <div className="feature"> <h2>Access Control</h2> <p> Control who can access your files and folders with fine-grained permissions and user management. </p> </div> <div className="feature"> <h2>Collaboration</h2> <p> Collaborate with your team by sharing files, commenting, and tracking changes in real-time. </p> </div> </section> <section className="pricing-section"id="pricing"> <h2>Pricing</h2> <p> Choose a plan that suits your needs and start securing your files today. </p> <div className="pricing-plans"> <div className="pricing-plan"> <h3>Basic</h3> <p>5 GB Storage</p> <p>Up to 5 Users</p> <p>$9.99/month</p> <a href="#"className="cta-button"> Choose Plan </a> </div> <div className="pricing-plan"> <h3>Pro</h3> <p>25 GB Storage</p> <p>Up to 10 Users</p> <p>$19.99/month</p> <a href="#"className="cta-button"> Choose Plan </a> </div> <div className="pricing-plan"> <h3>Enterprise</h3> <p>Unlimited Storage</p> <p>Custom User Limit</p> <p>Contact Us</p> <a href="#"className="cta-button"> Contact Sales </a> </div> </div> </section> <section id="contact"> <br /> <Contact /> </section> </div> </>)
+}
+
+export default Home;
+import React from "react";
+
+function Footer() {
+    return(<> <hr /> <footer> <div className="footer-content"> <p>© 2023 Secure File System. All rights reserved.</p> <ul className="footer-links"> <li> <a href="#">Privacy Policy</a> </li> <li> <a href="#">Terms of Service</a> </li> <li> <a href="#">FAQ</a> </li> <li> <a href="#">Contact</a> </li> </ul> </div> </footer> </>)
+}
+
+export default Footer;
+import React from "react";
+import './static/encrypt.css'
+
+function Encrypt() {
+    return(<section className="upload-section"> <h1>Encrypter</h1> <form className="upload-form"
+        action="#"
+        method="post"
+        encType="multipart/form-data"
+
+        > {
+            "{"
+        }
+
+        % csrf_token % {
+            "}"
+        }
+
+        <input type="checkbox"
+        name="encrypt"
+        id="encrypt"
+        onclick="encryptfile()"
+
+        /> Generate Key <input type="checkbox"name="stego"id="stego"onclick="stegofile()"/> {
+            " "
+        }
+
+        Stegnography <input type="text"
+        name="key"
+        id="encryption-key"
+        defaultValue="{{keyvalue}}"
+        placeholder="encryption-key"
+        disabled=""
+
+        /> <p> <i style= {
+                {
+                fontWeight: "lighter"
+            }
+        }
+
+        > key is imp to decrypt so donot loose. </i> </p> <input type="file"name="document"id="file"/> <input type="text"name="key"id="file"placeholder="Message"/> <br /> <div id="setgoimage"style= {
+                {
+                visibility: "hidden"
+            }
+        }
+
+        > Upload Cover File <input type="file"name="file"id="file"/> </div> <button type="submit"onclick="location.href='{% url 'encdec' %}'"> Encrypt </button> {
+            /* <button type="submit">Encrypt</button>
+       */
+        }
+
+        </form> </section>)
+}
+
+export default Encrypt;
+import React from "react";
+import './static/contact.css'
+
+function Contact() {
+    return (<div className="contact-container"> <h1>Contact Us</h1> <form className="contact-form"> <input type="text"placeholder="Your Name"/> <input type="email"placeholder="Your Email"/> <textarea placeholder="Message"defaultValue= {
+            ""
+        }
+
+        /> <button type="submit">Send Message</button> </form> </div>)
+}
+
+export default Contact;
+
+// AuthProvider.js (or wherever you define your AuthProvider)
+import React, {
+    createContext, useContext, useState
+}
+
+from 'react';
+
+const AuthContext=createContext();
+
+export function AuthProvider( {
+        children
+    }
+
+) {
+    const [isAuthenticated, setIsAuthenticated]=useState(false);
+
+    const login=()=> {
+        // Implement your login logic here
+        setIsAuthenticated(true);
+    }
+
+    ;
+
+    const logout=()=> {
+        // Implement your logout logic here
+        setIsAuthenticated(false);
+    }
+
+    ;
+
+    return (<AuthContext.Provider value= {
+                {
+                isAuthenticated, login, logout
+            }
+        }
+
+        > {
+            children
+        }
+
+        </AuthContext.Provider>);
+}
+
+export function useAuth() {
+    return useContext(AuthContext);
+}
+
+import React, {
+    createContext, useContext, useState
+}
+
+from 'react';
+
+const AuthContext=createContext();
+
+export function AuthProvider( {
+        children
+    }
+
+) {
+    const [isAuthenticated, setIsAuthenticated]=useState(false);
+
+    const login=()=> {
+        // Implement your login logic here.
+        setIsAuthenticated(true);
+    }
+
+    ;
+
+    const logout=()=> {
+        // Implement your logout logic here.
+        setIsAuthenticated(false);
+    }
+
+    ;
+
+    return (<AuthContext.Provider value= {
+                {
+                isAuthenticated, login, logout, setIsAuthenticated
+            }
+        }
+
+        > {
+            children
+        }
+
+        </AuthContext.Provider>);
+}
+
+export function useAuth() {
+    return useContext(AuthContext);
+}
