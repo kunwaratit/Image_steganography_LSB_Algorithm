@@ -1,8 +1,88 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+import FileUploader from './FileUploader';
+import KeyDisplay from './KeyDisplay';
+
 function FileUploadForm() {
+ 
   const [file, setFile] = useState(null);
+  const [encryptionKey, setEncryptionKey] = useState("");
+  const [encryptedFile, setEncryptedFile] = useState("");
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleEncrypt = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // Upload the file and get the encryption key
+      const response = await axios.post(
+        "http://localhost:8000/app/upload/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const { encrypted_file, encryption_key } = response.data;
+      setEncryptionKey(encryption_key);
+      setEncryptedFile(encrypted_file);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(encryptionKey);
+  };
+
+  return (
+    <div>
+      <h1>File Encryption App</h1>
+      <form onSubmit={handleEncrypt}>
+        <input
+          type="file"
+          name="file"
+          onChange={handleFileChange}
+          required
+        />
+        <button type="submit">Encrypt</button>
+      </form>
+      {encryptionKey && (
+        <div>
+          <h2>Encryption Key:</h2>
+          <input
+            type="text"
+            value={encryptionKey}
+            readOnly
+            disabled
+          />
+          <button onClick={handleCopyKey}>Copy Key</button>
+        </div>
+      )}
+      {encryptedFile && (
+        <div>
+          <h2>Encrypted File:</h2>
+          <a href={encryptedFile} download>
+            Download
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+ /* const [file, setFile] = useState(null);
   const [encryptionKey, setEncryptionKey] = useState("");
   const [encryptedFile, setEncryptedFile] = useState("");
 
@@ -70,5 +150,5 @@ function FileUploadForm() {
     </div>
   );
 }
-
+*/
 export default FileUploadForm;
