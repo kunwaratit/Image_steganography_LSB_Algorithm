@@ -76,7 +76,7 @@ function Navi() {
               // Render the Logout component when the user is authenticated
               <>
               <li className=""><NavLink to="/Encrypt">Upload</NavLink></li>
-              <li className=""><NavLink to="/Home">Files</NavLink></li>
+              <li className=""><NavLink to="/Myfiles">Files</NavLink></li>
               <li className=""><NavLink to="/Setting">Settings</NavLink></li>
               <li className="atit"  style={{width:"75px"}}><Logout/></li>
             </>) :( <><li className=""><NavLink to="/Login">Login</NavLink></li>

@@ -14,7 +14,7 @@ from .models import EncryptedFile, DecryptedFile
 from django.conf import settings
 from base64 import b64encode, b64decode
 from .encryptor import Encryptor
-
+from django.contrib.auth import get_user_model
 import os
 import binascii
 
@@ -57,15 +57,22 @@ def upload_file(request):
                 os.remove(temp_file.name)
 
                 encrypted_file = EncryptedFile.objects.create(
+
                     encrypted_file=encrypted_file_path,
                     original_file_name=uploaded_file.name,
                     encryption_key=key,
                     # Set the unique ID
                     encrypted_file_id=encrypted_file_id.hex
                 )
+                print(f"hahah:{encrypted_file.encrypted_file.url}")
                 # Return the path to the encrypted file as a response
+                encrypted_file_url = encrypted_file.encrypted_file.url  # Get the URL
+
+                encrypted_file_url = encrypted_file_url.replace(
+                    '/media/', '/', 1)
                 response_data = {
-                    'encrypted_file': encrypted_file.encrypted_file.url,
+                    'encrypted_file': encrypted_file_url,
+
                     #        'encryption_key': key  # Include the key in the response
                     'encryption_key': key,  # Include the hexadecimal key in the response
                     'encrypted_file_id': encrypted_file_id.hex  # Include the unique ID
@@ -152,3 +159,25 @@ def decrypt_file(request):
             return HttpResponseServerError(f'Error during decryption: {str(e)}')
 
     return HttpResponseBadRequest('Invalid request')
+
+
+@csrf_exempt
+def download_encrypted_file(request, encrypted_file_id):
+    try:
+        encrypted_file = EncryptedFile.objects.get(
+            encrypted_file_id=encrypted_file_id)
+
+        # Specify the path to the encrypted file on the server
+        encrypted_file_path = encrypted_file.encrypted_file.path
+       # encrypted_file_url = encrypted_file.encrypted_file.url  # Get the URL
+
+        # Remove one "media" from the URL
+       # encrypted_file_path = encrypted_file_url.replace('/media/', '/', 1)
+
+        # Prepare the response with the encrypted file for download
+        response = FileResponse(open(encrypted_file_path, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{encrypted_file.original_file_name}.enc"'
+
+        return response
+    except Exception as e:
+        return HttpResponseBadRequest('Error during download: {}'.format(str(e)))

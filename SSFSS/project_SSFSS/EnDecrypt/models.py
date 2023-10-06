@@ -1,8 +1,12 @@
 # EnDecrypt
 # models.py
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db import models
 import uuid
 import os
+# Import the settings module to access AUTH_USER_MODEL
+from django.conf import settings
 
 
 def encrypted_file_path(instance, filename):
@@ -12,8 +16,9 @@ def encrypted_file_path(instance, filename):
 
 
 class EncryptedFile(models.Model):
+
     id = models.AutoField(primary_key=True)
-    encrypted_file = models.FileField(upload_to=encrypted_file_path)
+    encrypted_file = models.FileField(upload_to='encrypted_files/')
     original_file_name = models.CharField(max_length=255)
     encryption_key = models.CharField(max_length=255)
     # Unique identifier for the encrypted file

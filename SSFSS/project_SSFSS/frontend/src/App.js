@@ -12,12 +12,14 @@ import Encrypt from './components/Encrypt';
 import Register from './components/Register';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
-
+import Decryptor from './components/Decrypt';
+import Myfiles from './components/Myfiles';
 import Logout from './components/Logout';
 import { AuthProvider } from './components/AuthContext'; // Import the AuthProvider
 
 
 import {useEffect } from 'react';
+
 class App extends React.Component{
 
   render(){
@@ -33,6 +35,8 @@ class App extends React.Component{
   <Routes>
     <Route  path='/Home' element= {<Home/>} />
     <Route exact path='/Encrypt' element= {<Encrypt/>} />
+    <Route exact path='/Myfiles/decrypt' element= {<Decryptor/>} />
+    <Route exact path='/Myfiles' element= {<Myfiles/>} />
     <Route exact path='/Contact' element= {<Contact/>} />
     <Route exact path='/Login' element= {<Login/>} />
     <Route exact path='/Register' element= {<Register/>} />

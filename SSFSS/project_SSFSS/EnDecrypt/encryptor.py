@@ -33,7 +33,7 @@ class Encryptor:
             plaintext = fo.read()
         enc = self.encrypt(plaintext, self.key)
         encrypted_file_path = os.path.join(
-            'media', 'encrypted_files', str(encrypted_file_id) + ".enc")
+            'media', 'encrypted_files', f'{encrypted_file_id}.enc')
         with open(encrypted_file_path, 'wb') as fo:
             fo.write(enc)
         print(f"encrypted_file_path:{encrypted_file_path}")

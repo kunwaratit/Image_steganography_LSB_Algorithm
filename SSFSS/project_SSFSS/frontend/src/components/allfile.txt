@@ -1,0 +1,1398 @@
+this is the code i have :
+
+for encrypt and decrypt:
+# EnDecrypt
+
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    #  path('upload_and_encrypt/', views.upload_and_encrypt,name='upload_and_encrypt'),
+
+    # ... other URL patterns ...
+    path('upload/', views.upload_file, name='upload_file'),
+    path('decrypt/', views.decrypt_file, name='decrypt_file'),
+    path('download/<str:encrypted_file_id>/',
+         views.download_encrypted_file, name='download_encrypted_file'),
+
+]
+# EnDecrypt
+# views.py
+from django.core.files.base import ContentFile
+from uuid import UUID
+from django.http import HttpResponseBadRequest, HttpResponseServerError, FileResponse
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from .decryptor import Decryptor
+import json
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import EncryptedFile, DecryptedFile
+from django.conf import settings
+from base64 import b64encode, b64decode
+from .encryptor import Encryptor
+
+import os
+import binascii
+
+import uuid
+
+import tempfile
+
+
+@csrf_exempt
+def upload_file(request):
+    if request.method == 'POST':
+        uploaded_file = request.FILES.get('file')
+        if not uploaded_file:
+            return HttpResponseBadRequest('No file provided')
+
+        if uploaded_file:
+            # Generate a random encryption key (you may change this as needed)
+            key_u = os.urandom(16)
+            key = b64encode(key_u).decode('utf-8')
+            # Convert bytes to hexadecimal string
+            key_hex = binascii.hexlify(key_u).decode('utf-8')
+            print(f"geenrated key:{key}")
+            print(f"geenrated key_hex:{key_hex}")
+            print(f"geenrated ultimate key:{key_u}")
+            try:
+                # Initialize the Encryptor with the key
+                print('sa')
+                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                    for chunk in uploaded_file.chunks():
+                        temp_file.write(chunk)
+
+                enc = Encryptor(key)
+
+                encrypted_file_id = uuid.uuid4()
+                # Encrypt the uploaded file and get the path to the encrypted file
+                encrypted_file_path = enc.encrypt_file(
+                    temp_file.name, encrypted_file_id.hex)
+                # Generate a unique ID for the encrypted file
+                print(f"get path:{encrypted_file_path}")
+                os.remove(temp_file.name)
+
+                encrypted_file = EncryptedFile.objects.create(
+                    encrypted_file=encrypted_file_path,
+                    original_file_name=uploaded_file.name,
+                    encryption_key=key,
+                    # Set the unique ID
+                    encrypted_file_id=encrypted_file_id.hex
+                )
+                print(f"hahah:{encrypted_file.encrypted_file.url}")
+                # Return the path to the encrypted file as a response
+                encrypted_file_url = encrypted_file.encrypted_file.url  # Get the URL
+
+                encrypted_file_url = encrypted_file_url.replace(
+                    '/media/', '/', 1)
+                response_data = {
+                    'encrypted_file': encrypted_file_url,
+                    #        'encryption_key': key  # Include the key in the response
+                    'encryption_key': key,  # Include the hexadecimal key in the response
+                    'encrypted_file_id': encrypted_file_id.hex  # Include the unique ID
+                }
+                return JsonResponse(response_data)
+            except Exception as e:
+                return HttpResponseBadRequest('Error during encryption: {}'.format(str(e)))
+    return JsonResponse({'error': 'Invalid request'})
+
+
+@csrf_exempt
+def decrypt_file(request):
+    if request.method == 'POST':
+        encryption_key = request.POST.get('encryption_key')
+        encrypted_file_id = request.POST.get('encrypted_file_id')
+        print(f"Received encrypted_file_id: {encrypted_file_id}")
+        print(f"Received encrypted_Key: {encryption_key}")
+
+        # Check if encryption_key and encrypted_file_id are not empty or None
+        if not encryption_key or not encrypted_file_id:
+            return HttpResponseBadRequest('Missing encryption key or encrypted file ID')
+
+        try:
+            # Convert the received encrypted_file_id to a UUID object
+            decrypted_file_uuid = UUID(encrypted_file_id)
+
+            # Fetch the encrypted file from the database
+            try:
+                encrypted_file = EncryptedFile.objects.get(
+                    encrypted_file_id=decrypted_file_uuid)
+            except ObjectDoesNotExist:
+                return HttpResponseBadRequest('Encrypted file not found')
+
+            # Debug: Log the expected decryption path
+            expected_decryption_path = os.path.join(
+                settings.MEDIA_ROOT, encrypted_file.encrypted_file.name)
+            print(f"Expected Decryption Path: {expected_decryption_path}")
+
+            # Check if the encrypted file exists at the expected path
+            if not os.path.exists(expected_decryption_path):
+                return HttpResponseBadRequest('Encrypted file not found')
+
+            print('File found')
+            # Key is used correctly as a string
+            key = encryption_key
+            decryptor = Decryptor(key)
+
+            decrypted_data = decryptor.decrypt_file(
+                encrypted_file.encrypted_file.path)
+
+            # Check if decryption was successful
+            if decrypted_data is None:
+                return HttpResponseServerError('Decryption failed')
+            decrypted_content = ContentFile(decrypted_data)
+            decrypted_file = DecryptedFile(
+                decrypted_file=decrypted_content,
+                original_encrypted_file=encrypted_file,
+                decryption_key=key,
+            )
+            decrypted_file.save()
+
+# Specify the directory where you want to save the decrypted file
+            decrypted_file_directory = os.path.join('media', 'decrypted_files')
+            os.makedirs(decrypted_file_directory, exist_ok=True)
+
+            # Create a unique filename for the decrypted file
+            decrypted_filename = f"{encrypted_file.original_file_name}.decrypted"
+
+            # Create the full path for the decrypted file
+            decrypted_file_path = os.path.join(
+                decrypted_file_directory, decrypted_filename)
+
+            # Save the decrypted content to the specified location
+            with open(decrypted_file_path, 'wb') as decrypted_file:
+                decrypted_file.write(decrypted_data)
+
+            # Prepare the response with the decrypted file for download
+            response = FileResponse(open(decrypted_file_path, 'rb'))
+            response['Content-Disposition'] = f'attachment; filename="{decrypted_filename}"'
+
+            return response
+        except Exception as e:
+            print(f"Error during decryption: {str(e)}")
+            return HttpResponseServerError(f'Error during decryption: {str(e)}')
+
+    return HttpResponseBadRequest('Invalid request')
+
+
+@csrf_exempt
+def download_encrypted_file(request, encrypted_file_id):
+    try:
+        encrypted_file = EncryptedFile.objects.get(
+            encrypted_file_id=encrypted_file_id)
+
+        # Specify the path to the encrypted file on the server
+        encrypted_file_path = encrypted_file.encrypted_file.path
+       # encrypted_file_url = encrypted_file.encrypted_file.url  # Get the URL
+
+        # Remove one "media" from the URL
+       # encrypted_file_path = encrypted_file_url.replace('/media/', '/', 1)
+
+        # Prepare the response with the encrypted file for download
+        response = FileResponse(open(encrypted_file_path, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{encrypted_file.original_file_name}.enc"'
+
+        return response
+    except Exception as e:
+        return HttpResponseBadRequest('Error during download: {}'.format(str(e)))
+# EnDecrypt
+# encryptor.py
+from Crypto.Cipher import AES
+from Crypto import Random
+import os
+from django.conf import settings
+from Crypto.Util.Padding import pad
+from Crypto.Random import get_random_bytes
+from base64 import b64encode, b64decode
+
+
+class Encryptor:
+
+    def __init__(self, key):
+        self.key = key
+
+    def pad(self, s):
+        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
+
+    def encrypt(self, message, key):
+        message = self.pad(message)
+        print(message)
+        key = key.encode('utf-8')
+
+        # iv = Random.new().read(AES.block_size)
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        return iv + cipher.encrypt(message)
+
+    def encrypt_file(self, uploaded_file, encrypted_file_id):
+        print('hello')
+        with open(uploaded_file, 'rb') as fo:
+            plaintext = fo.read()
+        enc = self.encrypt(plaintext, self.key)
+        encrypted_file_path = os.path.join(
+            'media', 'encrypted_files', f'{encrypted_file_id}.enc')
+        with open(encrypted_file_path, 'wb') as fo:
+            fo.write(enc)
+        print(f"encrypted_file_path:{encrypted_file_path}")
+        return encrypted_file_path
+# EnDecrypt
+# decryptor.py
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+import os
+
+
+class Decryptor:
+    def __init__(self, key):
+        self.key = key.encode('utf-8')
+        print(f"hh:{self.key}")
+
+    def pad(self, s):
+        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
+
+    def decrypt(self, enc, key):
+        iv = enc[:AES.block_size]
+
+        # key = key.encode('utf-8')
+
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        try:
+            decrypted_data = (cipher.decrypt(
+                enc[AES.block_size:]))
+            return decrypted_data.rstrip(b"\0")
+        except ValueError as e:
+            print(f"Error during decryption: {str(e)}")
+            return None
+
+    def decrypt_file(self, encrypted_file_path):
+        print(f"fos:{encrypted_file_path}")
+
+        with open(encrypted_file_path, 'rb') as encrypted_file:
+            enc = encrypted_file.read()
+            try:
+                key = self.key
+
+                decrypted_data = self.decrypt(enc, key)
+
+                if decrypted_data is not None:
+                    return decrypted_data
+                else:
+                    print("Decryption failed or returned None.")
+                    return None
+            except Exception as e:
+                print(f"Error during decryption: {str(e)}")
+                return None
+# EnDecrypt
+# models.py
+from django.db import models
+import uuid
+import os
+
+
+def encrypted_file_path(instance, filename):
+    # The instance parameter is an instance of EncryptedFile model.
+    # This function generates a unique file path for each encrypted file.
+    return os.path.join('media', 'encrypted_files', filename)
+
+
+class EncryptedFile(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    encrypted_file = models.FileField(upload_to='encrypted_files/')
+    original_file_name = models.CharField(max_length=255)
+    encryption_key = models.CharField(max_length=255)
+    # Unique identifier for the encrypted file
+    encrypted_file_id = models.UUIDField(
+        default=uuid.uuid4, editable=False, unique=True)
+
+    def __str__(self):
+        return self.original_file_name
+
+
+def decrypted_file_path(instance, filename):
+    # The instance parameter is an instance of DecryptedFile model.
+    # This function generates a unique file path for each decrypted file.
+    return os.path.join('media', 'decrypted_files', filename)
+
+
+class DecryptedFile(models.Model):
+    decrypted_file = models.FileField(upload_to=decrypted_file_path)
+    original_encrypted_file = models.ForeignKey(
+        EncryptedFile, on_delete=models.CASCADE)
+    decryption_key = models.CharField(max_length=255)
+    decrypted_file_id = models.UUIDField(
+        unique=True, editable=False, default=uuid.uuid4)
+
+    def __str__(self):
+        return f"Decrypted {self.original_encrypted_file.original_file_name}"
+
+
+now in registration and login part i have :
+#registration
+# views.py
+
+from django.contrib.auth.models import AnonymousUser
+from rest_framework import permissions
+from rest_framework.authtoken.models import Token
+from django.middleware.csrf import get_token
+from django.contrib.auth import logout
+from django.views.decorators.csrf import csrf_protect
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from django.http import JsonResponse
+from .serializers import UserSerializer, LoginSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from .renderers import UserRenderer
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from django.utils import timezone
+
+# Generate token manually
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+
+class RegisterAPI(APIView):
+    renderer_classes = [UserRenderer]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            first_name = serializer.validated_data.get('first_name', '')
+            phone_number = serializer.validated_data.get('phone_number', '')
+            # No need to use strptime for date_of_birth, DRF handles it automatically.
+            # It will be a date object after validation.
+
+            # Generate the user_id using the first four digits of the phone number and first name.
+            user_id = f"{first_name.lower()}{phone_number[-4:]}"
+
+            user = serializer.save(user_id=user_id)
+            token = get_tokens_for_user(user)
+            return Response({'Token': token, 'message': 'Registration successful'})
+        else:
+            return Response(serializer.errors, status=400)
+
+
+class LoginAPI(APIView):
+    renderer_classes = [UserRenderer]
+
+    def post(self, request, format=None):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
+
+            print(f"User ID: {email}, Password: {password}")
+
+            authenticated_user = authenticate(
+                email=email, password=password)
+
+            if authenticated_user is not None:
+                # Check if the user already has an active session
+             #       existing_session = UserSession.objects.filter(user=authenticated_user, is_logged_in=True).first()
+             #       if existing_session:
+                # User is already logged in; prevent login
+              #          return Response({'error': 'User is already logged in'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Create a new session record
+             #       user_session = UserSession(user=authenticated_user, login_time=timezone.now())
+             #       user_session.save()
+
+                print("Authentication successful")
+                token = get_tokens_for_user(authenticated_user)
+                return Response({'Token': token, 'message': 'Login successful'})
+            else:
+                # Authentication failed
+                print("Authentication failed")
+                return Response({'error': 'Invalid user ID or password'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+
+# from .models import UserSession
+
+
+def get_csrf_token(request):
+    # Get the CSRF token
+    csrf_token = get_token(request)
+
+    # Set the CSRF token in a cookie
+    response = JsonResponse({'csrf_token': csrf_token})
+    response.set_cookie('csrftoken', csrf_token)
+
+    return response
+
+
+class LogoutAPI(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        if not isinstance(request.user, AnonymousUser):
+            # Delete the user's authentication token to log them out
+            # request.auth.delete()
+            # token = request.META['HTTP_AUTHORIZATION']
+            # print(token)
+            # Update the UserSession to mark the user as logged out
+            Token.objects.filter(user=request.user).delete()
+
+        return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
+
+
+@csrf_protect
+def logout_view(request):
+    logout(request)
+
+    # Update the UserSession to mark the user as logged out
+
+    return JsonResponse({'message': 'Logged out successfully.'})
+# registration/urls.py
+from django.urls import path
+from .views import RegisterAPI, LoginAPI,LogoutAPI
+from django.contrib.auth.models import User
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import logout
+from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework.views import APIView
+# Custom LogoutView
+from .views import get_csrf_token
+from . import views
+from knox.views import LogoutView
+urlpatterns = [
+    # Use the corrected class name here
+    path('register/', RegisterAPI.as_view(), name='register'),
+    path('login/', LoginAPI.as_view(), name='login'),
+    #path('logout/', views.logout_view, name='logout'),
+    path('logout/', LogoutAPI.as_view(), name='logout'),
+    #path('get-csrf-token/', get_csrf_token, name='get-csrf-token'),
+    #path('logout/', LogoutView.as_view(), name='logout'),
+]
+# registration/serializers.py
+from django.contrib.auth import authenticate
+from rest_framework import serializers
+from .models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    user_id = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'phone_number',
+                  'first_name', 'last_name', 'user_id', 'password',)
+        # As user_id is unique and autogenerated, we don't want it to be writable.
+        extra_kwargs = {'user_id': {'read_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            phone_number=validated_data['phone_number']
+        )
+        return user
+
+    def get_user_id(self, obj):
+        # Generate the user_id based on first_name and last four numbers
+        if obj.first_name and obj.phone_number:
+            return f"{obj.first_name.lower().replace(' ', '')}_{obj.phone_number[-4:]}"
+        return None
+
+
+class LoginSerializer(serializers.ModelSerializer):
+
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ['email', 'password',]
+#registration
+#models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
+
+
+from django.db import models
+
+
+# registration/models.py
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150, unique=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    phone_number = models.CharField(max_length=15)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    user_id = models.CharField(
+        max_length=30, unique=True, blank=True, null=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']
+
+    def save(self, *args, **kwargs):
+        # Generate the username by concatenating first_name and last_name
+        self.username = f"{self.first_name} {self.last_name}"
+        # Generate user_id based on first_name and last four digits of phone_number
+        self.user_id = f"{self.first_name}{self.phone_number[-4:]}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.email
+main url:
+"""
+URL configuration for project_SSFSS project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from xml.etree.ElementInclude import include
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import re_path as url
+from rest_framework import routers
+
+# route = routers.DefaultRouter()
+# route.register("", ReactView, basename="appview")
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+
+    path('api/', include('registration.urls')),
+    path('app/', include('EnDecrypt.urls')),
+]
+Front end part:
+import React, { useState } from "react";
+import './static/register.css';
+import { Link } from "react-router-dom";
+import axios from "axios"; // Import the axios library
+import Validation from "./RegisterValidation";
+
+function Register() {
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    date_of_birth: "",
+    password: ""
+  });
+
+{/*  const formatDate = (dateString) => {
+    // Function to format the date as "YYYY-MM-DD"
+    const dateObject = new Date(dateString);
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObject.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+*/}const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    
+      setFormData({ ...formData, [name]: value });
+        
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setErrors(Validation(formData));
+    
+    
+    axios.post('http://localhost:8000/api/register/', formData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log(response.data); // Handle the response from the server, e.g., show a success message
+      })
+      .catch(error => {
+        console.error(error); // Handle the error response from the server, e.g., show an error message
+      });
+  };
+
+  return (
+    <div height="70%">
+      <div className="signup-container">
+        <h1>Sign Up</h1>
+        <form className="signup-form" onSubmit={handleSubmit}>
+          {errors.first_name && <span className="text-danger">{errors.first_name}</span>}
+          <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} />
+           <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} />
+           {errors.email && <span className="text-danger">{errors.email}</span>}
+          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+          
+          <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} />
+          {errors.password && (
+          <span className="text-danger">{errors.password}</span>
+        )}
+          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+          {errors.confirmpassword && (
+          <span className="text-danger">{errors.confirmpassword}</span>
+        )}
+        <input
+          name="confirmpassword"
+          type="password"
+          placeholder="Confirm Password"
+          onChange={handleChange}
+        />
+        
+          <button type="submit">Sign Up</button>
+        </form>
+        <div className="login-link">
+          <p>
+            Already have an account? <Link to="/Login">Log in</Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Register;
+import { NavLink } from 'react-router-dom';
+import './static/navi.css';
+import logo from './static/logo5.png';
+import Logout from "./Logout";
+import React, { useState, useEffect } from "react";
+import { getAuthToken } from "./utils";
+import Login from './Login';
+import '../App.css'
+function Navi() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    // Check if the user has a valid authentication token in localStorage
+    const token = localStorage.getItem('authToken'); // Replace 'authToken' with your token key
+    const userIsAuthenticated = !!token; // Convert token to a boolean value
+    setIsAuthenticated(userIsAuthenticated);
+    
+
+
+  const handleScroll = () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 0) {
+      navbar.style.position = 'fixed';
+      // Add other styles as needed
+    } else {
+      navbar.style.position = 'static';
+      // Add other styles as needed
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
+  // Remove the event listener when the component unmounts
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+}, []);
+
+
+  const handleScrollToPricing = () => {
+    const PSection = document.getElementById("pricing");
+    if (PSection) {
+      PSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleScrollToContact = () => {
+    const CSection = document.getElementById("contact");
+    if (CSection) {
+      CSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  const handleScrollToHome = () => {
+    const CSection = document.getElementById("main");
+    if (CSection) {
+      CSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+
+  return (
+    <div>
+      <title>{/*{title}*/}</title>
+      <header>
+        <nav className="navbar"  style={{ position: "sticky", top: "0", zIndex: "1000" }}>
+          <div className="navbar-logo">
+            <NavLink to="/Home" className="logo">
+              <img src={logo} style={{ padding: '0px' }} />SteganoGraphic Secure File Storage System
+            </NavLink>
+          </div>
+          <ul className="navbar-items">
+            <li className=""><NavLink to="/Home/#main" onClick={handleScrollToHome}>Home</NavLink></li>
+            <li className=""><NavLink to="/Home/#pricing" onClick={handleScrollToPricing}>Plans</NavLink></li>
+            <li className=""><NavLink to="/Home/#contact" onClick={handleScrollToContact}>Contact</NavLink></li>
+            {isAuthenticated ? (
+              // Render the Logout component when the user is authenticated
+              <>
+              <li className=""><NavLink to="/Encrypt">Upload</NavLink></li>
+              <li className=""><NavLink to="/Myfile">Files</NavLink></li>
+              <li className=""><NavLink to="/Setting">Settings</NavLink></li>
+              <li className="atit"  style={{width:"75px"}}><Logout/></li>
+            </>) :( <><li className=""><NavLink to="/Login">Login</NavLink></li>
+            <li className=""><NavLink to="/Register">Register</NavLink></li>
+           </>) }
+          </ul>
+        </nav>
+      </header>
+      <div style={{ backgroundColor: '#f1f1f1' }}>
+        <hr style={{ margin: '0px' }} />
+      </div>
+    </div>
+  );
+}
+
+export default Navi;
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+function Myfile() {
+  const [userFiles, setUserFiles] = useState([]);
+
+  useEffect(() => {
+    // Make an API request to fetch the user's files
+    axios.get("http://localhost:8000/app/user-files")
+      .then((response) => {
+        // Assuming the response data is an array of user files
+        setUserFiles(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  return (
+    <div>
+      <h1>My Files</h1>
+      <ul>
+        {userFiles.map((file) => (
+          <li key={file.id}>
+            <a href={file.url} download>
+              {file.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default Myfile;
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import React, { useState,useEffect } from 'react';
+import { useAuth } from './AuthContext'; // Import useAuth hook
+
+import { getCookie } from './utils';
+import {useHistory } from "react-router-dom";
+function Logout({ setShouldReloadNavi }) {
+  const { logout, isAuthenticated } = useAuth();
+  const [loggingOut, setLoggingOut] = useState(false);
+  const navigate = useNavigate();
+
+
+ // const [isAuthenticated, setIsAuthenticated] = useState(false); // Define isAuthenticated
+
+
+  const handleLogout = () => {
+    if (!loggingOut) {
+      setLoggingOut(true);
+      console.log('CSRF Token:',getCookie('csrftoken'));
+    // Clear any authentication data from local storage
+      localStorage.removeItem('authToken'); // Replace with the actual item name
+    // Other items you want to remove, e.g., user info, etc.
+      
+      axios.post('http://localhost:8000/api/logout/', null, {
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'), // Replace getCookie with your method to get the CSRF token from the cookies
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true, // Include credentials to send the CSRF token
+      })
+     
+      .then(response => {
+        
+        logout(); // Set isAuthenticated to false on logout
+     
+        console.log(response.data); // Handle the logout response from the server, e.g., show a success message
+        // Clear any authentication data from local storage or cookies, e.g., token, user info, etc.
+        // Redirect the user to the login page or perform any other desired action
+        navigate('/Home');
+      })
+      .catch(error => {
+        console.error(error); // Log the error for debugging purposes
+        // Handle the error response from the server, if needed
+      })
+      .finally(() => {
+        setLoggingOut(false); // Reset the state to allow subsequent logout attempts
+      });
+      
+    }
+  };
+
+  return (
+    <div>
+    
+    
+        <button onClick={handleLogout} disabled={loggingOut}>
+          {loggingOut ? 'Logging Out...' : 'Logout'}
+        </button>
+      </div>
+  );
+}
+
+export default Logout;
+import React, { useState } from "react";
+import './static/Login.css';
+import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios'; 
+import { getCookie } from './utils';
+import { useAuth } from './AuthContext'; // Import useAuth hook
+
+function Login() {
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState("");
+  const { setIsAuthenticated } = useAuth();
+  const navigate = useNavigate(); 
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setError("");
+
+    axios.post('http://localhost:8000/api/login/', formData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      const token = response.data.Token.access;
+      if (token) {
+        localStorage.setItem('authToken', token);
+        setIsAuthenticated(true);
+        navigate('/Home');
+        window.location.reload();
+        
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      if (error.response && error.response.data && error.response.data.detail) {
+        setError(error.response.data.detail);
+      } else {
+        setError("An error occurred while logging in. Please try again later.");
+      }
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  return (
+    <div className="login-container">
+      <h1>Login</h1>
+      {error && <div className="error-message">{error}</div>}
+      <form className="login-form" onSubmit={handleLogin}>
+        <input type="text" name="email" placeholder="Email or password" value={formData.email} onChange={handleChange} />
+        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+        <button type="submit">Login</button>
+      </form>
+      <div className="links">
+        <Link to="/Register">Sign up</Link> | <button onClick={() => console.log("Forgot password?")}>Forgot password?</button>
+      </div>
+    </div>
+  );
+}
+
+export default Login;
+import React from "react";
+import { Link } from "react-router-dom";
+import './static/Home.css';
+import Contact from "./Contact"; 
+function Home(){
+    return (
+        <>
+  
+  <div style={{ backgroundColor: "#ffffffdc", margin: "0px 5vw", padding: 50 }}>
+    <section className="hero-section" id="main">
+      <div className="hero-content" >
+        <h1>Secure File System</h1>
+
+        <div style={{ height: "20em" }}>
+
+        </div>
+        <p>Protect and manage your files with ease.</p>
+        <Link to="/Login" className="cta-button">Get Started</Link>
+       
+      </div>
+    </section>
+
+
+
+    <section className="features-section">
+      <div className="feature">
+        <h2>Secure File Storage</h2>
+        <p>
+          Store your files in a highly secure environment with advanced
+          encryption technology.
+        </p>
+      </div>
+      <div className="feature">
+        <h2>Access Control</h2>
+        <p>
+          Control who can access your files and folders with fine-grained
+          permissions and user management.
+        </p>
+      </div>
+      <div className="feature">
+        <h2>Collaboration</h2>
+        <p>
+          Collaborate with your team by sharing files, commenting, and tracking
+          changes in real-time.
+        </p>
+      </div>
+    </section>
+    <section className="pricing-section" id="pricing">
+      <h2>Pricing</h2>
+      <p>
+        Choose a plan that suits your needs and start securing your files today.
+      </p>
+      <div className="pricing-plans">
+        <div className="pricing-plan">
+          <h3>Basic</h3>
+          <p>5 GB Storage</p>
+          <p>Up to 5 Users</p>
+          <p>$9.99/month</p>
+          <a href="#" className="cta-button">
+            Choose Plan
+          </a>
+        </div>
+        <div className="pricing-plan">
+          <h3>Pro</h3>
+          <p>25 GB Storage</p>
+          <p>Up to 10 Users</p>
+          <p>$19.99/month</p>
+          <a href="#" className="cta-button">
+            Choose Plan
+          </a>
+        </div>
+        <div className="pricing-plan">
+          <h3>Enterprise</h3>
+          <p>Unlimited Storage</p>
+          <p>Custom User Limit</p>
+          <p>Contact Us</p>
+          <a href="#" className="cta-button">
+            Contact Sales
+          </a>
+        </div>
+      </div>
+    </section>
+    
+    <section id="contact">
+    <br />  
+    <Contact />
+    </section>
+  </div>
+</>
+
+    )
+}export default Home;
+import React from "react";
+
+function Footer(){
+    return(
+
+<>
+  <hr />
+  <footer>
+    <div className="footer-content">
+      <p>© 2023 Secure File System. All rights reserved.</p>
+      <ul className="footer-links">
+        <li>
+          <a href="#">Privacy Policy</a>
+        </li>
+        <li>
+          <a href="#">Terms of Service</a>
+        </li>
+        <li>
+          <a href="#">FAQ</a>
+        </li>
+        <li>
+          <a href="#">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+</>)}export default Footer;
+import React, { useState,useEffect } from "react";
+import axios from "axios";
+
+//import FileUploader from './FileUploader';
+import KeyDisplay from './KeyDisplay';
+
+function FileUploadForm() {
+ 
+  const [file, setFile] = useState(null);
+  const [encryptionKey, setEncryptionKey] = useState("");
+  const [encryptedFile, setEncryptedFile] = useState("");
+  const [isFileAvailable, setIsFileAvailable] = useState(false); // Define setIsFileAvailable
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleEncrypt = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // Upload the file and get the encryption key
+      const response = await axios.post(
+        "http://localhost:8000/app/upload/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const { encrypted_file, encryption_key } = response.data;
+      setEncryptionKey(encryption_key);
+      setEncryptedFile(encrypted_file);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };  
+
+  const checkFileAvailability = async () => {
+    if (encryptedFile) {
+      try {
+        const response = await axios.head(encryptedFile);
+        setIsFileAvailable(response.status !== 404);
+      } catch (error) {
+        setIsFileAvailable(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkFileAvailability();
+  }, [encryptedFile]);
+
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(encryptionKey);
+  };
+
+  return (
+    <div>
+      <h1>File Encryption App</h1>
+      <form onSubmit={handleEncrypt}>
+        <input
+          type="file"
+          name="file"
+          onChange={handleFileChange}
+          required />
+        <button type="submit">Encrypt</button>
+      </form>
+      {encryptionKey && (
+        <div>
+          <h2>Encryption Key:</h2>
+          <input
+            type="text"
+            value={encryptionKey}
+            readOnly
+            disabled
+          />
+          <button onClick={handleCopyKey}>Copy Key</button>
+        </div>
+      )}
+       {encryptedFile && (
+        <div>
+          <h2>Encrypted File:</h2>
+          {isFileAvailable ? (
+            <a href={encryptedFile} download>
+              Download
+            </a>
+          ) : (
+            <p>File not available</p>
+          )}
+        </div>
+      )}
+
+
+
+
+    </div>
+  );
+}
+
+
+
+ /* const [file, setFile] = useState(null);
+  const [encryptionKey, setEncryptionKey] = useState("");
+  const [encryptedFile, setEncryptedFile] = useState("");
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleEncryptionKeyChange = (e) => {
+    setEncryptionKey(e.target.value);
+  };
+
+  const handleEncrypt = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // Get the encryption key from your Django API
+     // const response = await axios.get("http://localhost:8000/app/upload");
+     // const { encryption_key } = response.data;
+
+      // Set the encryption key
+     // setEncryptionKey(encryption_key);
+
+      // Encrypt the file
+      const encryptedResponse = await axios.post(
+        "http://localhost:8000/app/upload/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const { encrypted_file, encryption_key } = encryptedResponse.data;
+      setEncryptedFile(encrypted_file);
+      console.log("Encryption Key:", encryption_key);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>File Encryption App</h1>
+      <form onSubmit={handleEncrypt}>
+        <input
+          type="file"
+          name="file"
+          onChange={handleFileChange}
+          required
+        />
+  
+        <button type="submit">Encrypt</button>
+      </form>
+      {encryptedFile && (
+        <div>
+          <h2>Encrypted File:</h2>
+          <a href={encryptedFile} download>
+            Download
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+*/
+export default FileUploadForm;
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+function Decryptor() {
+  const [decryptionKey, setDecryptionKey] = useState("");
+  const [decryptedFile, setDecryptedFile] = useState("");
+  const [decryptedFileName, setDecryptedFileName] = useState("");
+
+  const handleKeyChange = (e) => {
+    setDecryptionKey(e.target.value);
+  };
+
+  const handleDecrypt = async (e) => {
+    e.preventDefault();
+
+    // Make an API request to decrypt the file
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/app/decrypt/",
+        {
+          encryption_key: decryptionKey,
+          encrypted_file_id: "your_encrypted_file_id_here", // Replace with the actual encrypted file ID
+        }
+      );
+
+      // Handle the decrypted file response here
+      // You may save it to state or display it as needed
+      const { data, headers } = response;
+      const fileName = headers["content-disposition"].split("filename=")[1];
+
+      setDecryptedFile(data);
+      setDecryptedFileName(fileName);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleDownloadDecryptedFile = () => {
+    // Create a Blob object for the decrypted file data
+    const blob = new Blob([decryptedFile]);
+
+    // Create a URL for the Blob
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a link for downloading the file
+    const downloadLink = document.createElement("a");
+    downloadLink.href = url;
+    downloadLink.download = decryptedFileName;
+    downloadLink.style.display = "none";
+
+    // Trigger a click event to start the download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    // Revoke the Blob URL to free up resources
+    window.URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div>
+      <h1>File Decryption App</h1>
+      <form onSubmit={handleDecrypt}>
+        <input
+          type="text"
+          placeholder="Enter decryption key"
+          value={decryptionKey}
+          onChange={handleKeyChange}
+          required
+        />
+        <button type="submit">Decrypt</button>
+      </form>
+      {decryptedFile && (
+        <div>
+          <h2>Decrypted File:</h2>
+          <p>{decryptedFileName}</p>
+          <button onClick={handleDownloadDecryptedFile}>Download Decrypted File</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Decryptor;
+import React from "react";
+import './static/contact.css'
+function Contact(){
+    return (
+        <div className="contact-container">
+  <h1>Contact Us</h1>
+  <form className="contact-form">
+    <input type="text" placeholder="Your Name" />
+    <input type="email" placeholder="Your Email" />
+    <textarea placeholder="Message" defaultValue={""} />
+    <button type="submit">Send Message</button>
+  </form>
+</div>
+    )
+}export default Contact;
+// AuthProvider.js (or wherever you define your AuthProvider)
+import React, { createContext, useContext, useState } from 'react';
+
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const login = () => {
+    // Implement your login logic here
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    // Implement your logout logic here
+    setIsAuthenticated(false);
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}

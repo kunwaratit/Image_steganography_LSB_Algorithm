@@ -10,4 +10,7 @@ urlpatterns = [
     # ... other URL patterns ...
     path('upload/', views.upload_file, name='upload_file'),
     path('decrypt/', views.decrypt_file, name='decrypt_file'),
+    path('download/<str:encrypted_file_id>/',
+         views.download_encrypted_file, name='download_encrypted_file'),
+
 ]

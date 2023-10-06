@@ -42,6 +42,9 @@ INSTALLED_APPS = [
 
     'registration',
     'EnDecrypt',
+    'stego_api',
+    'UserProfile',
+    'integration',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders',

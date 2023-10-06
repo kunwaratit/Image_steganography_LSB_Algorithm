@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 
-import FileUploader from './FileUploader';
+//import FileUploader from './FileUploader';
 import KeyDisplay from './KeyDisplay';
 
 function FileUploadForm() {
@@ -9,6 +9,7 @@ function FileUploadForm() {
   const [file, setFile] = useState(null);
   const [encryptionKey, setEncryptionKey] = useState("");
   const [encryptedFile, setEncryptedFile] = useState("");
+  const [isFileAvailable, setIsFileAvailable] = useState(false); // Define setIsFileAvailable
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -38,7 +39,22 @@ function FileUploadForm() {
     } catch (error) {
       console.error("Error:", error);
     }
+  };  
+
+  const checkFileAvailability = async () => {
+    if (encryptedFile) {
+      try {
+        const response = await axios.head(encryptedFile);
+        setIsFileAvailable(response.status !== 404);
+      } catch (error) {
+        setIsFileAvailable(false);
+      }
+    }
   };
+
+  useEffect(() => {
+    checkFileAvailability();
+  }, [encryptedFile]);
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(encryptionKey);
@@ -52,8 +68,7 @@ function FileUploadForm() {
           type="file"
           name="file"
           onChange={handleFileChange}
-          required
-        />
+          required />
         <button type="submit">Encrypt</button>
       </form>
       {encryptionKey && (
@@ -68,14 +83,22 @@ function FileUploadForm() {
           <button onClick={handleCopyKey}>Copy Key</button>
         </div>
       )}
-      {encryptedFile && (
+       {encryptedFile && (
         <div>
           <h2>Encrypted File:</h2>
-          <a href={encryptedFile} download>
-            Download
-          </a>
+          {isFileAvailable ? (
+            <a href={encryptedFile} download>
+              Download
+            </a>
+          ) : (
+            <p>File not available</p>
+          )}
         </div>
       )}
+
+
+
+
     </div>
   );
 }
