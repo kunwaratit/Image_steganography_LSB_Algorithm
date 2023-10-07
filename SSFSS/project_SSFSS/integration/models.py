@@ -11,5 +11,4 @@ class EncryptedFile(models.Model):
     encryption_key = models.CharField(max_length=255)
     encrypted_file_id = models.UUIDField(
         default=uuid.uuid4, editable=False, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+#    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)

@@ -8,7 +8,14 @@ function Validation(values) {
   } else {
     error.name = "";
   }
-
+  if (values.phone_number === "") {
+    error.phone_number = "Phone number should not be empty";
+  }
+   else if (!/^\d{10}$/.test(values.phone_number)) {
+    error.phone_number = "Phone number must be 10 digits long";
+  } else {
+    error.phone_number = "";
+  }
   if (values.email === "") {
     error.email = "email should not be empty";
   } else if (email_pattern.test(values.email)) {
@@ -19,9 +26,13 @@ function Validation(values) {
 
   if (values.password === "") {
     error.password = "password should not be empty";
-  } else if (password_pattern.test(values.password)) {
+  }else if (values.password.length < 8) {
+    error.password = "Password must be at least 8 characters long";
+  }
+  else if (password_pattern.test(values.password)) {
     error.password = "";
-  } else {
+  }
+   else {
     error.password =
       "passworld should contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character";
   }

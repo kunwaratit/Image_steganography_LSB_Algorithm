@@ -1,5 +1,7 @@
 # EnDecrypt
 # views.py
+from django.http import JsonResponse
+from .models import EncryptedFile
 from django.core.files.base import ContentFile
 from uuid import UUID
 from django.http import HttpResponseBadRequest, HttpResponseServerError, FileResponse
@@ -22,11 +24,14 @@ import uuid
 
 import tempfile
 
+from registration.models import User
+
 
 @csrf_exempt
 def upload_file(request):
     if request.method == 'POST':
         uploaded_file = request.FILES.get('file')
+        user_id = request.POST.get('user_id')
         if not uploaded_file:
             return HttpResponseBadRequest('No file provided')
 
@@ -56,8 +61,18 @@ def upload_file(request):
                 print(f"get path:{encrypted_file_path}")
                 os.remove(temp_file.name)
 
-                encrypted_file = EncryptedFile.objects.create(
+                # Debugging: Print the user_id
+                print(f"Received user_id: {user_id}")
 
+                try:
+                    user = User.objects.get(user_id=user_id)
+                    print(f"Found user: {user.user_id}")
+                except User.DoesNotExist:
+                    return HttpResponseBadRequest('User not found')
+
+               # user = get_user_model().objects.get(id=user_id)
+                encrypted_file = EncryptedFile.objects.create(
+                    user=user,
                     encrypted_file=encrypted_file_path,
                     original_file_name=uploaded_file.name,
                     encryption_key=key,
@@ -88,8 +103,6 @@ def decrypt_file(request):
     if request.method == 'POST':
         encryption_key = request.POST.get('encryption_key')
         encrypted_file_id = request.POST.get('encrypted_file_id')
-        print(f"Received encrypted_file_id: {encrypted_file_id}")
-        print(f"Received encrypted_Key: {encryption_key}")
 
         # Check if encryption_key and encrypted_file_id are not empty or None
         if not encryption_key or not encrypted_file_id:
@@ -106,16 +119,13 @@ def decrypt_file(request):
             except ObjectDoesNotExist:
                 return HttpResponseBadRequest('Encrypted file not found')
 
-            # Debug: Log the expected decryption path
-            expected_decryption_path = os.path.join(
-                settings.MEDIA_ROOT, encrypted_file.encrypted_file.name)
-            print(f"Expected Decryption Path: {expected_decryption_path}")
-
             # Check if the encrypted file exists at the expected path
-            if not os.path.exists(expected_decryption_path):
+            expected_encryption_path = os.path.join(
+                settings.MEDIA_ROOT, encrypted_file.encrypted_file.name)
+
+            if not os.path.exists(expected_encryption_path):
                 return HttpResponseBadRequest('Encrypted file not found')
 
-            print('File found')
             # Key is used correctly as a string
             key = encryption_key
             decryptor = Decryptor(key)
@@ -126,32 +136,13 @@ def decrypt_file(request):
             # Check if decryption was successful
             if decrypted_data is None:
                 return HttpResponseServerError('Decryption failed')
-            decrypted_content = ContentFile(decrypted_data)
-            decrypted_file = DecryptedFile(
-                decrypted_file=decrypted_content,
-                original_encrypted_file=encrypted_file,
-                decryption_key=key,
-            )
-            decrypted_file.save()
-
-# Specify the directory where you want to save the decrypted file
-            decrypted_file_directory = os.path.join('media', 'decrypted_files')
-            os.makedirs(decrypted_file_directory, exist_ok=True)
-
-            # Create a unique filename for the decrypted file
-            decrypted_filename = f"{encrypted_file.original_file_name}.decrypted"
-
-            # Create the full path for the decrypted file
-            decrypted_file_path = os.path.join(
-                decrypted_file_directory, decrypted_filename)
-
-            # Save the decrypted content to the specified location
-            with open(decrypted_file_path, 'wb') as decrypted_file:
-                decrypted_file.write(decrypted_data)
 
             # Prepare the response with the decrypted file for download
-            response = FileResponse(open(decrypted_file_path, 'rb'))
-            response['Content-Disposition'] = f'attachment; filename="{decrypted_filename}"'
+            response = HttpResponse(content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{encrypted_file.original_file_name}"'
+
+            # Write the decrypted data to the response
+            response.write(decrypted_data)
 
             return response
         except Exception as e:
@@ -181,3 +172,15 @@ def download_encrypted_file(request, encrypted_file_id):
         return response
     except Exception as e:
         return HttpResponseBadRequest('Error during download: {}'.format(str(e)))
+
+
+@csrf_exempt
+def get_all_encrypted_files(request):
+    encrypted_files = EncryptedFile.objects.all()
+    data = [{
+        'original_file_name': file.original_file_name,
+
+        'encrypted_file_id': str(file.encrypted_file_id),
+        'user_id': file.user.id,  # You can include user-related data if needed
+    } for file in encrypted_files]
+    return JsonResponse({'encrypted_files': data})

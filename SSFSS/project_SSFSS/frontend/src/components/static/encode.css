@@ -1,0 +1,26 @@
+.encode-container {
+    width: 50%;
+    height: fit-content;
+    margin: 18vh auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(22, 13, 1, 0.541);
+    justify-content: space-between;
+
+}
+
+@media (max-width: 768px) {
+    .encode-container {
+        width: 80%;
+        max-width: 400px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .encode-container {
+        width: 90%;
+        max-width: 300px;
+    }
+}

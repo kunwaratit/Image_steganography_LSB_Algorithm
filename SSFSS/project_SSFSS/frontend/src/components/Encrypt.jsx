@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from "react";
 import axios from "axios";
-
+import "../components/static/encrypt.css"
+import DecryptionComponent from './DecryptionComponent'
 //import FileUploader from './FileUploader';
 import KeyDisplay from './KeyDisplay';
 
@@ -22,6 +23,11 @@ function FileUploadForm() {
     formData.append("file", file);
 
     try {
+      const userId = localStorage.getItem("user_id"); // Modify this to match your storage key
+
+    // Append user ID to the form data
+      formData.append("user_id", userId);
+
       // Upload the file and get the encryption key
       const response = await axios.post(
         "http://localhost:8000/app/upload/",
@@ -40,7 +46,7 @@ function FileUploadForm() {
       console.error("Error:", error);
     }
   };  
-
+/*
   const checkFileAvailability = async () => {
     if (encryptedFile) {
       try {
@@ -55,20 +61,23 @@ function FileUploadForm() {
   useEffect(() => {
     checkFileAvailability();
   }, [encryptedFile]);
-
+*/
   const handleCopyKey = () => {
     navigator.clipboard.writeText(encryptionKey);
   };
 
   return (
-    <div>
-      <h1>File Encryption App</h1>
+    <div >
+    <div className="encrypt-container">
+        <h1>File Encryption App</h1>
       <form onSubmit={handleEncrypt}>
         <input
           type="file"
           name="file"
           onChange={handleFileChange}
           required />
+
+          <hr/>
         <button type="submit">Encrypt</button>
       </form>
       {encryptionKey && (
@@ -86,20 +95,19 @@ function FileUploadForm() {
        {encryptedFile && (
         <div>
           <h2>Encrypted File:</h2>
-          {isFileAvailable ? (
+          
             <a href={encryptedFile} download>
               Download
             </a>
-          ) : (
-            <p>File not available</p>
-          )}
+          
         </div>
       )}
 
+</div>
 
-
-
+<DecryptionComponent />
     </div>
+    
   );
 }
 

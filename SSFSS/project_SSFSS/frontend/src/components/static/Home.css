@@ -18,7 +18,7 @@
 }
 
 .features-section {
-    padding: 80px 20px;
+    padding: auto;
     text-align: center;
 }
 
@@ -66,4 +66,63 @@
 
 .pricing-plan p {
     margin-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+    .pricing-plans {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pricing-plan {
+        flex-basis: 100%;
+        margin: 0 0 20px 0;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .pricing-plans {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pricing-plan {
+        flex-basis: 80%;
+        margin: 0 0 20px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .features-section {
+        padding: 40px 10px;
+        /* Adjust padding for smaller screens */
+    }
+
+    .features-section h2 {
+        font-size: 24px;
+        /* Adjust font size for h2 on smaller screens */
+    }
+
+    .features-section .feature {
+        margin-bottom: 20px;
+        /* Adjust margin for features */
+    }
+}
+
+/* Responsive styles for medium-sized screens (481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .features-section {
+        padding: 60px 20px;
+        /* Adjust padding for medium-sized screens */
+    }
+
+    .features-section h2 {
+        font-size: 28px;
+        /* Adjust font size for h2 on medium-sized screens */
+    }
+
+    .features-section .feature {
+        margin-bottom: 30px;
+        /* Adjust margin for features */
+    }
 }

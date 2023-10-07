@@ -1,5 +1,8 @@
 # stego_app/views.py
 
+from rest_framework.response import Response
+import numpy as np
+from .serializers import ImageUploadSerializer
 import os
 import cv2
 from django.conf import settings
@@ -8,11 +11,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .utils import msgtobinary
 
-import os
-import cv2
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from rest_framework import status
+
+from .models import EncodedImage
 
 
 @api_view(['POST'])
@@ -78,6 +78,9 @@ def encode_file_into_image(request):
 
     try:
         stego_image_path = encode_file(file, image_path)
+        encoded_image = EncodedImage(
+            image=stego_image_path, hidden_data="Your Hidden Data Here")
+        encoded_image.save()
         response_data = {
             'message': 'File encoded successfully.',
             'stego_image_path': stego_image_path
@@ -88,55 +91,45 @@ def encode_file_into_image(request):
         return JsonResponse(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# stego_app/views.py
+
+
+def decode_img_data(image):
+    data_binary = ""
+    for i in image:
+        for pixel in i:
+            r, g, b = msgtobinary(pixel)
+            data_binary += r[-1]
+            data_binary += g[-1]
+            data_binary += b[-1]
+            total_bytes = [data_binary[i: i+8]
+                           for i in range(0, len(data_binary), 8)]
+            decoded_data = ""
+            for byte in total_bytes:
+                decoded_data += chr(int(byte, 2))
+                if decoded_data[-5:] == "*^*^*":
+                    return decoded_data[:-5]
+
+
 @api_view(['POST'])
 def decode_text_from_image(request):
-    stego_image_path = os.path.join(
-        settings.MEDIA_ROOT, 'images/stego/UCD.png')
+    serializer = ImageUploadSerializer(data=request.data)
+    if serializer.is_valid():
+        image_file = serializer.validated_data['image_file']
 
-    # Function to decode text from an image
-    def decode_text(stego_image_path):
-        if not os.path.exists(stego_image_path):
-            raise ValueError("Stego image not found at the specified path")
+        try:
+            image_data = image_file.read()
+            image = cv2.imdecode(np.frombuffer(
+                image_data, np.uint8), cv2.IMREAD_COLOR)
 
-        stego_image = cv2.imread(stego_image_path)
+            decoded_message = decode_img_data(image)
 
-        # Check if the stego image was loaded successfully
-        if stego_image is None:
-            raise ValueError("Error loading the stego image")
+            if decoded_message:
+                return Response({'message': 'Text decoded successfully.', 'decoded_text': decoded_message})
+            else:
+                return Response({'message': 'No hidden text found in the image.'}, status=status.HTTP_204_NO_CONTENT)
 
-        # Initialize data index and binary data
-        binary_data = ""
-        delimiter = "*^*^*"
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Loop through stego image pixels and extract the LSBs
-        for i in stego_image:
-            for pixel in i:
-                r, g, b = msgtobinary(pixel)
-                binary_data += r[-1]
-                binary_data += g[-1]
-                binary_data += b[-1]
-
-                # Check for the delimiter to mark the end of data
-                if binary_data.endswith(delimiter):
-                    binary_data = binary_data[:-len(delimiter)]
-                    break
-
-        # Convert binary data to text
-        decoded_text = ""
-        total_bytes = [binary_data[i:i+8]
-                       for i in range(0, len(binary_data), 8)]
-        for byte in total_bytes:
-            decoded_text += chr(int(byte, 2))  # Convert binary to integer here
-
-        return decoded_text
-
-    try:
-        decoded_text = decode_text(stego_image_path)
-        response_data = {
-            'message': 'Text decoded successfully.',
-            'decoded_text': decoded_text
-        }
-        return JsonResponse(response_data, status=status.HTTP_200_OK)
-    except Exception as e:
-        response_data = {'error': str(e)}
-        return JsonResponse(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

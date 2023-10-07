@@ -4,20 +4,21 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios'; 
 import { getCookie } from './utils';
 import { useAuth } from './AuthContext'; // Import useAuth hook
-
+import Validation from "./LoginValidation";
+import ForgotPassword from "./forget";
 function Login() {
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate(); 
 
   const handleLogin = (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     axios.post('http://localhost:8000/api/login/', formData, {
       headers: {
@@ -25,9 +26,16 @@ function Login() {
       }
     })
     .then(response => {
-      const token = response.data.Token.access;
-      if (token) {
-        localStorage.setItem('authToken', token);
+      //const token = response.data.Token.access;
+      const {email, user_id,id, message } = response.data;
+      const Token = response.data.Token.access;
+      if (Token) {
+        localStorage.setItem('authToken', Token);
+        localStorage.setItem('email', email);
+        localStorage.setItem('user_id', user_id);
+        localStorage.setItem('id', id);
+        localStorage.setItem('message', message);
+
         setIsAuthenticated(true);
         navigate('/Home');
         window.location.reload();
@@ -39,7 +47,7 @@ function Login() {
       if (error.response && error.response.data && error.response.data.detail) {
         setError(error.response.data.detail);
       } else {
-        setError("An error occurred while logging in. Please try again later.");
+        setError("Invalid ! Try again.");
       }
     });
   };
@@ -52,14 +60,14 @@ function Login() {
   return (
     <div className="login-container">
       <h1>Login</h1>
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="error-message" style={{ color: 'red' }}> {error}</div>}
       <form className="login-form" onSubmit={handleLogin}>
-        <input type="text" name="email" placeholder="Email or password" value={formData.email} onChange={handleChange} />
+        <input type="text" name="email" placeholder="User Email" value={formData.email} onChange={handleChange} />
         <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
         <button type="submit">Login</button>
       </form>
       <div className="links">
-        <Link to="/Register">Sign up</Link> | <button onClick={() => console.log("Forgot password?")}>Forgot password?</button>
+        <Link to="/Register">Sign up</Link> |<Link to="/Forgot">Forgot password?</Link>"
       </div>
     </div>
   );

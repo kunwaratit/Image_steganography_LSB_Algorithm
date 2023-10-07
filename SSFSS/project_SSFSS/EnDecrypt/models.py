@@ -24,6 +24,7 @@ class EncryptedFile(models.Model):
     # Unique identifier for the encrypted file
     encrypted_file_id = models.UUIDField(
         default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     def __str__(self):
         return self.original_file_name

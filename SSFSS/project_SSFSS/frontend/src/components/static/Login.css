@@ -60,3 +60,18 @@ button:hover {
     text-decoration: underline;
     color: #ff6600;
 }
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 80%;
+        max-width: 400px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .login-container {
+        width: 90%;
+        max-width: 300px;
+    }
+}

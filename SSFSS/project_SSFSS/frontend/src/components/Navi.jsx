@@ -70,7 +70,7 @@ function Navi() {
           </div>
           <ul className="navbar-items">
             <li className=""><NavLink to="/Home/#main" onClick={handleScrollToHome}>Home</NavLink></li>
-            <li className=""><NavLink to="/Home/#pricing" onClick={handleScrollToPricing}>Plans</NavLink></li>
+            <li className=""><NavLink to="/Home/#pricing"   onClick={handleScrollToPricing}>Plans</NavLink></li>
             <li className=""><NavLink to="/Home/#contact" onClick={handleScrollToContact}>Contact</NavLink></li>
             {isAuthenticated ? (
               // Render the Logout component when the user is authenticated

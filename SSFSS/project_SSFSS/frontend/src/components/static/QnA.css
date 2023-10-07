@@ -1,0 +1,53 @@
+.dwg-accordion-item {
+    border: 1px solid var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.dwg-accordion-item-label-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    cursor: pointer;
+    background-color: var(--sec-secondary-color);
+}
+
+.dwg-accordion-item-label-box:hover {
+    background-color: var(--secondary-color);
+}
+
+.dwg-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.dwg-accordion-item__chevron {
+    transition: transform 0.3s ease;
+}
+
+.dwg-accordion-item__chevron svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--primary-color);
+}
+
+.dwg-accordion-item__chevron.open {
+    transform: rotate(180deg);
+}
+
+.dwg-accordion-item__dropdown-inner {
+    padding: 15px;
+}
+
+.dwg-box {
+    background-color: var(--primary-color);
+    color: var(--sec-secondary-color);
+    padding: 15px;
+}
+
+
+.dwg-mb--6 {
+    margin-bottom: 12px;
+}

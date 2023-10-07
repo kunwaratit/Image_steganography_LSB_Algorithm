@@ -1,0 +1,32 @@
+.info-container {
+    flex-basis: 300px;
+    padding: 20px;
+    margin: 0 20px;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.info-container p {
+    margin: 5px 0;
+    padding: 0;
+}
+
+.contact-details {
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.contact-details h2 {
+    margin-bottom: 10px;
+}
+
+.contact-details p {
+    margin: 5px 0;
+}
+
+.contact-details strong {
+    font-weight: bold;
+    margin-right: 10px;
+}

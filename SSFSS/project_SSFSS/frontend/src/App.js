@@ -12,18 +12,24 @@ import Encrypt from './components/Encrypt';
 import Register from './components/Register';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
-import Decryptor from './components/Decrypt';
-import Myfiles from './components/Myfiles';
+
+import EncryptedFilesList from './components/Myfiles'
 import Logout from './components/Logout';
 import { AuthProvider } from './components/AuthContext'; // Import the AuthProvider
-
+import DecryptionComponent from './components/DecryptionComponent';
 
 import {useEffect } from 'react';
+
+import EncodeComponent from './components/EncodeComponent';
+import DecodeComponent from './components/DecodeComponent';
+import ForgotPassword from "./components/forget";
+import FAQSection from "./components/QnA";
+import YourPage from "./components/info";
 
 class App extends React.Component{
 
   render(){
-    
+   
     return (
       <AuthProvider>
      
@@ -32,21 +38,28 @@ class App extends React.Component{
 
       
 <div>
+
   <Routes>
+  <Route  path='/' element= {<Home/>} />
     <Route  path='/Home' element= {<Home/>} />
     <Route exact path='/Encrypt' element= {<Encrypt/>} />
-    <Route exact path='/Myfiles/decrypt' element= {<Decryptor/>} />
-    <Route exact path='/Myfiles' element= {<Myfiles/>} />
+    <Route exact path='/Myfiles/decrypt' element= {<DecryptionComponent/>} />
+    <Route exact path='/Myfiles' element= {<EncryptedFilesList/>} />
     <Route exact path='/Contact' element= {<Contact/>} />
     <Route exact path='/Login' element= {<Login/>} />
     <Route exact path='/Register' element= {<Register/>} />
+    <Route exact path="/Forgot" element={<ForgotPassword />} />
+    <Route exact path="/QnA" element={<FAQSection />} />
+    <Route exact path="/Contactinfo" element={<YourPage />} />
+    <Route path="/encode" element= {<EncodeComponent/>} />
+    <Route path="/decode" element= {<DecodeComponent/>} />
+    
   </Routes>
 
       <div> 
         
-      <header><h1>Data From the database through the api
-      </h1></header>
-       <hr/>
+      
+ 
      {/*   {this.state.details.map((output,id)=>(
           <div key={id}>
             <div>

@@ -65,3 +65,18 @@ button:hover {
 .login-link a:hover {
     color: #ff6600;
 }
+
+@media (max-width: 768px) {
+    .signup-container {
+        width: 80%;
+        max-width: 500px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .signup-container {
+        width: 90%;
+        max-width: 300px;
+    }
+}

@@ -19,7 +19,12 @@ function Logout({ setShouldReloadNavi }) {
       setLoggingOut(true);
       console.log('CSRF Token:',getCookie('csrftoken'));
     // Clear any authentication data from local storage
-      localStorage.removeItem('authToken'); // Replace with the actual item name
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('email')
+      localStorage.removeItem('user_id')
+      localStorage.removeItem('message')
+      localStorage.removeItem('id')
+       // Replace with the actual item name
     // Other items you want to remove, e.g., user info, etc.
       
       axios.post('http://localhost:8000/api/logout/', null, {

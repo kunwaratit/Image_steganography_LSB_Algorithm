@@ -196,3 +196,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'registration.User'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760
+
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587  # Use 587 for TLS or 465 for SSL
+# EMAIL_USE_TLS = True  # Use TLS encryption
+# EMAIL_USE_SSL = False  # Don't use SSL
+# EMAIL_HOST_USER = 'atit.191508@ncit.edu.np'  # Your Gmail email address
+# Your Gmail password or app-specific password
+# EMAIL_HOST_PASSWORD = '45accuMed46'

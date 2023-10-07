@@ -1,6 +1,7 @@
-#registration
+# registration
 # views.py
 
+import random
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
@@ -23,6 +24,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 
 # Generate token manually
+from django.core.mail import EmailMessage
 
 
 def get_tokens_for_user(user):
@@ -47,10 +49,23 @@ class RegisterAPI(APIView):
 
             # Generate the user_id using the first four digits of the phone number and first name.
             user_id = f"{first_name.lower()}{phone_number[-4:]}"
+         #   random_number = random.randint(1000, 9999)
 
+            # Send the random number via email
+         #   email_subject = 'Registration Verification'
+          #  email_message = f'Your verification code is: {random_number}'
+          #  email = EmailMessage(email_subject, email_message, to=[user.email])
+          #  email.send()
             user = serializer.save(user_id=user_id)
             token = get_tokens_for_user(user)
-            return Response({'Token': token, 'message': 'Registration successful'})
+            response_data = {
+                'Token': token,
+                'email': user.email,
+                'user_id': user.user_id,
+                'message': 'Registration successful'
+            }
+
+            return Response(response_data)
         else:
             return Response(serializer.errors, status=400)
 
@@ -83,10 +98,16 @@ class LoginAPI(APIView):
 
                 print("Authentication successful")
                 token = get_tokens_for_user(authenticated_user)
-                return Response({'Token': token, 'message': 'Login successful'})
+                response_data = {
+                    'Token': token,
+                    'id': authenticated_user.id,
+                    'email': authenticated_user.email,
+                    'user_id': authenticated_user.user_id,
+                    'message': 'Login successful'
+
+                }
+                return Response(response_data)
             else:
-                # Authentication failed
-                print("Authentication failed")
                 return Response({'error': 'Invalid user ID or password'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
 

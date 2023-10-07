@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import './static/register.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import axios from "axios"; // Import the axios library
 import Validation from "./RegisterValidation";
-
-function Register() {
+//import { useHistory } from "react-router";
+function Register(props) {
+  //const history = useHistory();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -43,7 +45,15 @@ function Register() {
       }
     })
       .then(response => {
-        console.log(response.data); // Handle the response from the server, e.g., show a success message
+        console.log(response.data); 
+        if (response.data.error) {
+          setErrors({ email: response.data.error }); // Set the error message in state
+        } else {
+          // Registration successful, handle accordingly
+          console.log('Registration successful');
+          navigate("/Login");
+        }
+        // Handle the response from the server, e.g., show a success message
       })
       .catch(error => {
         console.error(error); // Handle the error response from the server, e.g., show an error message
@@ -59,8 +69,8 @@ function Register() {
           <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} />
            <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} />
            {errors.email && <span className="text-danger">{errors.email}</span>}
-          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-          
+          <input type="email" name="email" placeholder="userEmail" value={formData.email} onChange={handleChange} />
+          {errors.phone_number && <span className="text-danger">{errors.phone_number}</span>}
           <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} />
           {errors.password && (
           <span className="text-danger">{errors.password}</span>
