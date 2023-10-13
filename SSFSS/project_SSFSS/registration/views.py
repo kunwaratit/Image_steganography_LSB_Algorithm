@@ -19,11 +19,22 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .renderers import UserRenderer
-
+from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # Generate token manually
+
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.mail import send_mail  # Import send_mail
+from django.core.mail import EmailMessage  # Import EmailMessage
+from django.utils import timezone  # Import timezone
+from .models import User
+from .serializers import UserSerializer, LoginSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate
 
 
 def get_tokens_for_user(user):
@@ -48,6 +59,10 @@ class RegisterAPI(APIView):
         # serializer = UserSerializer(data=request.data)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
+            otp_code = str(random.randint(1000, 9999))
+
+            # Save the OTP code in the database (you may need to add this field to your User model)
+            print(otp_code)
             first_name = serializer.validated_data.get('first_name', '')
             phone_number = serializer.validated_data.get('phone_number', '')
             # No need to use strptime for date_of_birth, DRF handles it automatically.
@@ -62,8 +77,16 @@ class RegisterAPI(APIView):
           #  email_message = f'Your verification code is: {random_number}'
           #  email = EmailMessage(email_subject, email_message, to=[user.email])
           #  email.send()
-            user = serializer.save(user_id=user_id)
+            email = serializer.validated_data.get('email')
+            user = serializer.save(user_id=user_id, otp_code=otp_code)
             token = get_tokens_for_user(user)
+            send_mail(
+                'OTP Verification Code',
+                f'Your OTP code is: {otp_code}',
+                'atit.191508@ncit.edu.np',  # Replace with your email address
+                ['atit.191508@ncit.edu.np'],
+                fail_silently=False,
+            )
             response_data = {
                 'Token': token,
                 'email': user.email,

@@ -42,6 +42,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     user_id = models.CharField(
         max_length=30, unique=True, blank=True, null=True)
+    otp_code = models.CharField(
+        max_length=4, null=True, blank=True)  # Add OTP code field
+    email_verified = models.BooleanField(
+        default=False)  # Add email verification field
 
     objects = UserManager()
 
@@ -53,6 +57,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.username = f"{self.first_name} {self.last_name}"
         # Generate user_id based on first_name and last four digits of phone_number
         self.user_id = f"{self.first_name}{self.phone_number[-4:]}"
+        if self.email_verified and not self.is_active:
+            self.is_active = True
         super().save(*args, **kwargs)
 
     def __str__(self):

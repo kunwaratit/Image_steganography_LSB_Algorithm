@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [new_password, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [step, setStep] = useState("requestCode"); // Initial step
 
@@ -75,7 +75,7 @@ const ForgotPassword = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, newPassword }),
+          body: JSON.stringify({ email, new_password }),
         });
   
         if (response.ok) {
@@ -136,11 +136,12 @@ return (
       {step === "resetPassword" && (
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="newPassword">New Password:</label>
+            <label htmlFor="new_password">New Password:</label>
             <input
               type="password"
-              id="newPassword"
-              value={newPassword}
+              name="new_password"
+              id="new_password"
+              value={new_password}
               onChange={handleNewPasswordChange}
               required
             />

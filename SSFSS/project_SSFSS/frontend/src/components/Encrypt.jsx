@@ -2,11 +2,13 @@ import React, { useState,useEffect } from "react";
 import axios from "axios";
 import "../components/static/encrypt.css"
 import DecryptionComponent from './DecryptionComponent'
+import {useNavigate  } from "react-router-dom";
 //import FileUploader from './FileUploader';
 import KeyDisplay from './KeyDisplay';
+import { Navigate } from "react-router";
 
 function FileUploadForm() {
- 
+  const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [encryptionKey, setEncryptionKey] = useState("");
   const [encryptedFile, setEncryptedFile] = useState("");
@@ -65,9 +67,13 @@ function FileUploadForm() {
   const handleCopyKey = () => {
     navigator.clipboard.writeText(encryptionKey);
   };
-
+const handleStego=()=>{
+  navigate("/Encode")
+}
   return (
-    <div >
+    <div className="container">
+      <div className="encryption">
+        <h2>Encryption</h2>
     <div className="encrypt-container">
         <h1>File Encryption App</h1>
       <form onSubmit={handleEncrypt}>
@@ -83,6 +89,7 @@ function FileUploadForm() {
       {encryptionKey && (
         <div>
           <h2>Encryption Key:</h2>
+          <p style={{color:'red',margin:'0px'}}>Note:copy the key and store safely </p><span>key and file id is sent to email</span>
           <input
             type="text"
             value={encryptionKey}
@@ -103,9 +110,11 @@ function FileUploadForm() {
         </div>
       )}
 
-</div>
+    </div>
 
 <DecryptionComponent />
+</div>
+        <button onClick={handleStego}>implement Stego</button>
     </div>
     
   );

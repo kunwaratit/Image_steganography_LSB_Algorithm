@@ -181,12 +181,23 @@ def download_encrypted_file(request, encrypted_file_id):
 
 
 @csrf_exempt
-def get_all_encrypted_files(request):
-    encrypted_files = EncryptedFile.objects.all()
-    data = [{
-        'original_file_name': file.original_file_name,
+def get_user_encrypted_files(request):
+    try:
+        # Get the user_id from the JSON request body
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        if user_id is not None:
+            # Add this line for debugging
+            print(f"Received user_id: {user_id}")
 
-        'encrypted_file_id': str(file.encrypted_file_id),
-        'user_id': file.user.id,  # You can include user-related data if needed
-    } for file in encrypted_files]
-    return JsonResponse({'encrypted_files': data})
+            encrypted_files = EncryptedFile.objects.filter(user=user_id)
+            data = [{
+                'original_file_name': file.original_file_name,
+                'encrypted_file_id': str(file.encrypted_file_id),
+                'user_id': user_id,
+            } for file in encrypted_files]
+            return JsonResponse({'encrypted_files': data})
+        else:
+            return HttpResponseBadRequest('Missing user_id')
+    except User.DoesNotExist:
+        return HttpResponseBadRequest('User not found')

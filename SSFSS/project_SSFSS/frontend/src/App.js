@@ -20,8 +20,8 @@ import DecryptionComponent from './components/DecryptionComponent';
 
 import {useEffect } from 'react';
 
-import EncodeComponent from './components/EncodeComponent';
-import DecodeComponent from './components/DecodeComponent';
+import EncodeImage from './components/EncodeImage';
+import DecodeImage from './components/DecodeImage';
 import ForgotPassword from "./components/forget";
 import FAQSection from "./components/QnA";
 import YourPage from "./components/info";
@@ -51,8 +51,8 @@ class App extends React.Component{
     <Route exact path="/Forgot" element={<ForgotPassword />} />
     <Route exact path="/QnA" element={<FAQSection />} />
     <Route exact path="/Contactinfo" element={<YourPage />} />
-    <Route path="/encode" element= {<EncodeComponent/>} />
-    <Route path="/decode" element= {<DecodeComponent/>} />
+    <Route path="/encode" element= {<EncodeImage/>} />
+    <Route path="/decode" element= {<DecodeImage/>} />
     
   </Routes>
 

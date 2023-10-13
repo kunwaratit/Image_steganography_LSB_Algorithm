@@ -20,6 +20,7 @@ def encode_file_into_image(request):
     file = request.FILES.get('file', None)
     # Replace with the path to your image
     image_path = os.path.join(settings.MEDIA_ROOT, 'images/stego/UCD.png')
+    print(image_path)
 
     def encode_file(file, image_path):
         image = cv2.imread(image_path)
@@ -27,6 +28,7 @@ def encode_file_into_image(request):
         # Check if the image was loaded successfully
         if image is None:
             raise ValueError("Image not found at the specified path")
+
 
         # Calculate the maximum bytes that can be encoded in the image
         no_of_bytes = (image.shape[0] * image.shape[1] * 3) // 8
@@ -66,9 +68,9 @@ def encode_file_into_image(request):
                     break
 
         # Save the stego image with a new name
-        stego_image_path = 'stego_' + os.path.basename(image_path)
-        cv2.imwrite(stego_image_path, image)
 
+        stego_image_path = 'stego_1' + os.path.basename(image_path)
+        cv2.imwrite(stego_image_path, image)
         # Save the encoded image as a file
         encoded_image_file = open(stego_image_path, 'wb')
         encoded_image_file.write(file_data)

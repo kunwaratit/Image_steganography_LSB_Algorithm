@@ -74,14 +74,16 @@ def verify_reset_code(request):
 def reset_password(request):
     email = request.data.get('email')
     new_password = request.data.get('new_password')
-
+    print(new_password)
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Update the user's password
-    user.set_password(new_password)
+    password = user.set_password(new_password)
+    print(password)
+    print(new_password)
     user.save()
 
     return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)

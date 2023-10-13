@@ -80,3 +80,36 @@ button:hover {
         max-width: 300px;
     }
 }
+
+/* In register.css */
+
+.otp-container {
+    display: flex;
+    /* Use flexbox to place OTP input and button in the same row */
+    align-items: center;
+    /* Vertically center align items */
+    gap: 10px;
+    /* Add some space between the input and button */
+}
+
+.otp-input {
+    /* Style for OTP input field */
+    padding: 10px;
+    width: 150px;
+    /* Adjust the width as needed */
+}
+
+.otp-button {
+    /* Style for the "Request OTP" button */
+    padding: 10px 20px;
+    margin: -50px 0px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.otp {
+    color: red;
+    margin: 13px;
+}

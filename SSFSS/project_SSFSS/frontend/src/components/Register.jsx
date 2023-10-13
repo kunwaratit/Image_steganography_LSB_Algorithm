@@ -63,6 +63,10 @@ function Register(props) {
           console.error(error);
         } // Handle the error response from the server, e.g., show an error message
       });
+  }; const handleRequestOTP = () => {
+    // Implement your logic here to make a request for OTP
+    // You can send a request to your server to generate and send an OTP
+    // Once you receive the OTP, you can handle it accordingly
   };
 
   return (
@@ -90,6 +94,27 @@ function Register(props) {
           placeholder="Confirm Password"
           onChange={handleChange}required
         />
+  {/* OTP input field and button 
+        <div className="otp-container">
+        <button
+              type=""
+              onClick={handleRequestOTP}
+              className="otp-button"
+            >
+              Request OTP
+            </button>
+            <input
+            className="otp"
+              type="text"
+              name="otp"
+              placeholder="Enter OTP"
+              value={formData.otp}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+*/}
         
           <button type="submit">Sign Up</button>
         </form>

@@ -3,7 +3,7 @@
 # urls.py
 from django.urls import path
 from . import views
-from .views import get_all_encrypted_files
+from .views import get_user_encrypted_files
 urlpatterns = [
     #  path('upload_and_encrypt/', views.upload_and_encrypt,name='upload_and_encrypt'),
 
@@ -12,7 +12,7 @@ urlpatterns = [
     path('decrypt/', views.decrypt_file, name='decrypt_file'),
     path('download/<str:encrypted_file_id>/',
          views.download_encrypted_file, name='download_encrypted_file'),
-    path('encrypted_files/', get_all_encrypted_files,
-         name='get_all_encrypted_files'),
+    path('get_user_encrypted_files/', views.get_user_encrypted_files,
+         name='get_user_encrypted_files'),
 
 ]
