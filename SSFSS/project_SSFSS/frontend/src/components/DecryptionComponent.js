@@ -67,7 +67,7 @@ function DecryptionComponent() {
       </div>
       {decryptedFile && (
         <div>
-          <a href={decryptedFile} download="decrypted_file">Download Decrypted File</a>
+          <a href={decryptedFile} download={encryptedFileId+".txt"}>Download Decrypted File</a>
         </div>
       )}
     </div>

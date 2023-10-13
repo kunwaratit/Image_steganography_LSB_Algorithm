@@ -120,18 +120,24 @@ def decrypt_file(request):
                 return HttpResponseBadRequest('Encrypted file not found')
 
             # Check if the encrypted file exists at the expected path
-            expected_encryption_path = os.path.join(
-                settings.MEDIA_ROOT, encrypted_file.encrypted_file.name)
-
-            if not os.path.exists(expected_encryption_path):
-                return HttpResponseBadRequest('Encrypted file not found')
+            # expected_encryption_path = os.path.join(
+            #    settings.MEDIA_ROOT, encrypted_file.encrypted_file.name)
+            # print(f"expected {expected_encryption_path}")
+            # if not os.path.exists(expected_encryption_path):
+            #    return HttpResponseBadRequest('EnScrypted file not found')
 
             # Key is used correctly as a string
             key = encryption_key
             decryptor = Decryptor(key)
 
+            print(f"hello:{encrypted_file.encrypted_file.path}")
+            encrypted_file_url = encrypted_file.encrypted_file.path  # Get the URL
+
+            encrypted_file_url = encrypted_file_url.replace(
+                '/media/', '/', 1)
+
             decrypted_data = decryptor.decrypt_file(
-                encrypted_file.encrypted_file.path)
+                encrypted_file_url)
 
             # Check if decryption was successful
             if decrypted_data is None:

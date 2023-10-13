@@ -28,7 +28,7 @@ class Decryptor:
             return None
 
     def decrypt_file(self, encrypted_file_path):
-        print(f"fos:{encrypted_file_path}")
+        print(f"decryptfileFrom:{encrypted_file_path}")
 
         with open(encrypted_file_path, 'rb') as encrypted_file:
             enc = encrypted_file.read()

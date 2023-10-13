@@ -4,7 +4,7 @@ function Validation(values) {
   const password_pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
 
   if (values.first_name === "") {
-    error.first_name = "name should not be empty";
+    error.first_name = "Naaame should not be empty";
   } else {
     error.name = "";
   }

@@ -46,8 +46,8 @@ function Register(props) {
     })
       .then(response => {
         console.log(response.data); 
-        if (response.data.error) {
-          setErrors({ email: response.data.error }); // Set the error message in state
+        if (response.data.errors) {
+          setErrors({ ...errors, ...response.data.errors }); // Set the error message in state
         } else {
           // Registration successful, handle accordingly
           console.log('Registration successful');
@@ -56,7 +56,12 @@ function Register(props) {
         // Handle the response from the server, e.g., show a success message
       })
       .catch(error => {
-        console.error(error); // Handle the error response from the server, e.g., show an error message
+        if (error.response && error.response.data && error.response.data.errors) {
+          const serverErrors = error.response.data.errors;
+          setErrors({ ...errors, ...serverErrors });
+        } else {
+          console.error(error);
+        } // Handle the error response from the server, e.g., show an error message
       });
   };
 
@@ -66,16 +71,16 @@ function Register(props) {
         <h1>Sign Up</h1>
         <form className="signup-form" onSubmit={handleSubmit}>
           {errors.first_name && <span className="text-danger">{errors.first_name}</span>}
-          <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} />
-           <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} />
+          <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} required/>
+           <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} required/>
            {errors.email && <span className="text-danger">{errors.email}</span>}
-          <input type="email" name="email" placeholder="userEmail" value={formData.email} onChange={handleChange} />
+          <input type="email" name="email" placeholder="userEmail" value={formData.email} onChange={handleChange}required />
           {errors.phone_number && <span className="text-danger">{errors.phone_number}</span>}
-          <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} />
+          <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} required/>
           {errors.password && (
           <span className="text-danger">{errors.password}</span>
         )}
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
+          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required/>
           {errors.confirmpassword && (
           <span className="text-danger">{errors.confirmpassword}</span>
         )}
@@ -83,7 +88,7 @@ function Register(props) {
           name="confirmpassword"
           type="password"
           placeholder="Confirm Password"
-          onChange={handleChange}
+          onChange={handleChange}required
         />
         
           <button type="submit">Sign Up</button>

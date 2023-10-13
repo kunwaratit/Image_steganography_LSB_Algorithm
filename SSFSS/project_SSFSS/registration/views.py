@@ -1,6 +1,7 @@
 # registration
 # views.py
 
+import re
 import random
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import permissions
@@ -21,10 +22,8 @@ from .renderers import UserRenderer
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.utils import timezone
 
 # Generate token manually
-from django.core.mail import EmailMessage
 
 
 def get_tokens_for_user(user):
@@ -40,6 +39,13 @@ class RegisterAPI(APIView):
     renderer_classes = [UserRenderer]
 
     def post(self, request):
+        errors = server_side_validation(request.data)
+
+        if errors:
+            # If there are validation errors, return them as a response
+            return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        # serializer = UserSerializer(data=request.data)
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             first_name = serializer.validated_data.get('first_name', '')
@@ -113,6 +119,38 @@ class LoginAPI(APIView):
 
 
 # from .models import UserSession
+# views.py or a separate validation module
+
+
+def server_side_validation(data):
+    errors = {}
+    email_pattern = r"^[^\s@]+@[^\s@]+\.[^\s@]+$"
+    password_pattern = r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$"
+
+    if not data.get('first_name'):
+        errors['first_name'] = "Name should not be empty"
+
+    if not data.get('phone_number'):
+        errors['phone_number'] = "Phone number should not be empty"
+    elif not re.match(r"^\d{10}$", data.get('phone_number')):
+        errors['phone_number'] = "Phone number must be 10 digits long"
+
+    if not data.get('email'):
+        errors['email'] = "Email should not be empty"
+    elif not re.match(email_pattern, data.get('email')):
+        errors['email'] = "Email should be valid"
+
+    if not data.get('password'):
+        errors['password'] = "Password should not be empty"
+    elif len(data.get('password')) < 8:
+        errors['password'] = "Password must be at least 8 characters long"
+    elif not re.match(password_pattern, data.get('password')):
+        errors['password'] = "Password should contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character"
+
+    if data.get('password') != data.get('confirmpassword'):
+        errors['confirmpassword'] = "Password didn't match"
+
+    return errors
 
 
 def get_csrf_token(request):

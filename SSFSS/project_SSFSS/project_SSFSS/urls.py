@@ -33,4 +33,5 @@ urlpatterns = [
     path('stego_app/', include('stego_api.urls')),
     path('integration/', include('integration.urls')),
     path('userprofile/', include('UserProfile.urls')),
+    path('forget_password/', include('password_reset.urls')),
 ]
