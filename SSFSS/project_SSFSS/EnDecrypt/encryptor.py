@@ -36,5 +36,7 @@ class Encryptor:
             'media', 'encrypted_files', f'{encrypted_file_id}.enc')
         with open(encrypted_file_path, 'wb') as fo:
             fo.write(enc)
+            print(f'atit{enc}')
         print(f"encrypted_file_path:{encrypted_file_path}")
-        return encrypted_file_path
+        return enc,encrypted_file_path
+    # rypted_file_path

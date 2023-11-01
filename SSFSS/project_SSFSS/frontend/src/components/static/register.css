@@ -6,11 +6,11 @@ body {
 }
 
 .signup-container {
-    width: 400px;
-    margin: 65px auto;
-    padding: 20px;
+    width: 50%;
+    margin: 3% 3%;
+    padding: 2%;
     background-color: #fff;
-    border-radius: 4px;
+    border-radius: 2%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -20,7 +20,7 @@ h1 {
 }
 
 .signup-form {
-    margin-top: 30px;
+    margin-top: -10px;
 }
 
 input[type="text"],
@@ -74,6 +74,9 @@ button:hover {
 }
 
 
+
+
+
 @media (max-width: 480px) {
     .signup-container {
         width: 90%;
@@ -112,4 +115,62 @@ button:hover {
 .otp {
     color: red;
     margin: 13px;
+}
+
+.RegContainer {
+    display: flex;
+    /* align-items: center; */
+
+    margin: 5% 20%;
+    background: linear-gradient(195deg, #1c4ff6, #ff0000);
+    border-radius: 2%;
+}
+
+.RegMsg {
+    color: #ffff;
+    width: 400px;
+    margin: 1% 2%;
+    padding: 3% 1%;
+    /* background-color: red; */
+    /* border-radius: 20%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    opacity: 88%;
+}
+
+.RegMsg h3 {
+    text-decoration: underline;
+}
+
+.RegMsg ul li {
+    text-decoration: none;
+}
+
+.userName {
+    display: flex;
+}
+
+.userName input {
+    margin: 10px 5px 10px 0px;
+    width: 47%;
+}
+
+@media (max-width: 1150px) {
+    .RegContainer {
+        margin: 5% 10%;
+
+    }
+}
+
+@media (max-width: 860px) {
+    .RegContainer {
+        margin: 5% 5%;
+
+    }
+}
+
+@media (max-width: 400px) {
+    .RegContainer {
+
+        display: block;
+    }
 }

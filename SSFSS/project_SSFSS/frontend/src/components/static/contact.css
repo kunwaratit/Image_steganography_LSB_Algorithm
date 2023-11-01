@@ -6,7 +6,7 @@ body {
 }
 
 .contact-container {
-    width: 400px;
+    width: 50%;
     margin: 8vh auto;
     padding: 20px;
     background-color: #fff;
@@ -65,4 +65,23 @@ button:hover {
         width: 90%;
         max-width: 300px;
     }
+}
+
+.contactPage {
+    display: flex;
+    /* margin: 5% 10%; */
+    width: fit-content;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 2%;
+}
+
+.contactMsg {
+    width: 50%;
+    background-color: red;
+    margin: 8vh auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 2%;
+
+
 }

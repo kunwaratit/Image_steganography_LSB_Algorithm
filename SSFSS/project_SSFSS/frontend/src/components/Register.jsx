@@ -70,58 +70,78 @@ function Register(props) {
   };
 
   return (
-    <div height="70%">
-      <div className="signup-container">
-        <h1>Sign Up</h1>
-        <form className="signup-form" onSubmit={handleSubmit}>
-          {errors.first_name && <span className="text-danger">{errors.first_name}</span>}
-          <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} required/>
-           <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} required/>
-           {errors.email && <span className="text-danger">{errors.email}</span>}
-          <input type="email" name="email" placeholder="userEmail" value={formData.email} onChange={handleChange}required />
-          {errors.phone_number && <span className="text-danger">{errors.phone_number}</span>}
-          <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} required/>
-          {errors.password && (
-          <span className="text-danger">{errors.password}</span>
-        )}
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required/>
-          {errors.confirmpassword && (
-          <span className="text-danger">{errors.confirmpassword}</span>
-        )}
-        <input
-          name="confirmpassword"
-          type="password"
-          placeholder="Confirm Password"
-          onChange={handleChange}required
-        />
-  {/* OTP input field and button 
-        <div className="otp-container">
-        <button
-              type=""
-              onClick={handleRequestOTP}
-              className="otp-button"
-            >
-              Request OTP
-            </button>
-            <input
-            className="otp"
-              type="text"
-              name="otp"
-              placeholder="Enter OTP"
-              value={formData.otp}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-*/}
-        
-          <button type="submit">Sign Up</button>
-        </form>
-        <div className="login-link">
+    <div >
+      <div className="RegContainer">
+        <div className="RegMsg">
+          <h3>Sign in to Get Register</h3>
           <p>
-            Already have an account? <Link to="/Login">Log in</Link>
+            <ul>
+              <li>First name is required</li>
+              <li>Registered email, Contact can only be used once</li>
+              <li>Phone number email field is required </li>
+              <li>Password is required
+                <ul>Password mustbe<li>atleast 8 characters long</li>
+                  <li>atleast one UpperCase letter</li>
+                  <li>atleast one lowerCase letter</li>
+                  <li>atleast one number</li>
+                  <li>atleast one Special letter</li>
+                </ul>
+              </li>
+            </ul>
           </p>
+        </div>
+        <div className="signup-container">
+          <h1>Sign Up</h1>
+          <form className="signup-form" onSubmit={handleSubmit}>
+            {errors.first_name && <span className="text-danger">{errors.first_name}</span>}
+           <div className="userName"> <input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} required/>
+           <input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} required/>
+           </div>  {errors.email && <span className="text-danger">{errors.email}</span>}
+            <input type="email" name="email" placeholder="userEmail" value={formData.email} onChange={handleChange}required />
+            {errors.phone_number && <span className="text-danger">{errors.phone_number}</span>}
+            <input type="text" name="phone_number" placeholder="Phone" value={formData.phone_number} onChange={handleChange} required/>
+            {errors.password && (
+            <span className="text-danger">{errors.password}</span>
+          )}
+            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required/>
+            {errors.confirmpassword && (
+            <span className="text-danger">{errors.confirmpassword}</span>
+          )}
+          <input
+            name="confirmpassword"
+            type="password"
+            placeholder="Confirm Password"
+            onChange={handleChange}required
+          />
+    {/* OTP input field and button 
+          <div className="otp-container">
+          <button
+                type=""
+                onClick={handleRequestOTP}
+                className="otp-button"
+              >
+                Request OTP
+              </button>
+              <input
+              className="otp"
+                type="text"
+                name="otp"
+                placeholder="Enter OTP"
+                value={formData.otp}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+  */}
+          
+            <button type="submit">Sign Up</button>
+          </form>
+          <div className="login-link">
+            <p>
+              Already have an account? <Link to="/Login">Log in</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

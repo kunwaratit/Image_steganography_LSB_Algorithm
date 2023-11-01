@@ -11,7 +11,9 @@ function FileUploadForm() {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [encryptionKey, setEncryptionKey] = useState("");
-  const [encryptedFile, setEncryptedFile] = useState("");
+  const [encrypteddata, setEncrypteddata] = useState(null);
+  const [encryptedFile, setEncryptedFile] = useState(null);
+  const [encryptedFileid, setEncryptedFileid] = useState(null);
   const [isFileAvailable, setIsFileAvailable] = useState(false); // Define setIsFileAvailable
 
   const handleFileChange = (e) => {
@@ -41,9 +43,11 @@ function FileUploadForm() {
         }
       );
 
-      const { encrypted_file, encryption_key } = response.data;
+      const {encrypted_file_id,encrypted_file,encrypted_data_hex, encryption_key} = response.data;
       setEncryptionKey(encryption_key);
-      setEncryptedFile(encrypted_file);
+      setEncrypteddata(encrypted_data_hex);
+      setEncryptedFile(encrypted_file)
+      setEncryptedFileid(encrypted_file_id)
     } catch (error) {
       console.error("Error:", error);
     }
@@ -89,6 +93,7 @@ const handleStego=()=>{
       {encryptionKey && (
         <div>
           <h2>Encryption Key:</h2>
+         
           <p style={{color:'red',margin:'0px'}}>Note:copy the key and store safely </p><span>key and file id is sent to email</span>
           <input
             type="text"
@@ -102,8 +107,8 @@ const handleStego=()=>{
        {encryptedFile && (
         <div>
           <h2>Encrypted File:</h2>
-          
-            <a href={encryptedFile} download>
+          <div style={{}}>Decoded Text:<p> {encrypteddata}</p></div>
+            <a href={encryptedFile} download={encryptedFileid+".enc"}>
               Download
             </a>
           

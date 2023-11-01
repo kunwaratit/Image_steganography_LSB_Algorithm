@@ -10,7 +10,7 @@ function Navi() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   useEffect(() => {
-    // Check if the user has a valid authentication token in localStorage
+    // Check izf the user has a valid authentication token in localStorage
     const token = localStorage.getItem('authToken'); // Replace 'authToken' with your token key
     const userIsAuthenticated = !!token; // Convert token to a boolean value
     setIsAuthenticated(userIsAuthenticated);

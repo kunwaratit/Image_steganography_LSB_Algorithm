@@ -26,6 +26,8 @@ import ForgotPassword from "./components/forget";
 import FAQSection from "./components/QnA";
 import YourPage from "./components/info";
 
+
+
 class App extends React.Component{
 
   render(){
@@ -53,7 +55,7 @@ class App extends React.Component{
     <Route exact path="/Contactinfo" element={<YourPage />} />
     <Route path="/encode" element= {<EncodeImage/>} />
     <Route path="/decode" element= {<DecodeImage/>} />
-    
+   
   </Routes>
 
       <div> 

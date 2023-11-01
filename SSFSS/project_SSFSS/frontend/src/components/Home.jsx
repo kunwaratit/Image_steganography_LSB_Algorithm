@@ -9,11 +9,11 @@ import FAQSection from "./QnA";
 function Home() {
   return (
     <>
-      <hr />
+      
       <Slider />
 
       <div
-        style={{ backgroundColor: "#ffffffdc", margin: "0px 5vw", padding: 50 }}
+        style={{ backgroundColor: "#ffffffdc", margin: "0px 5vw", padding: 50,marginTop:"50px" }}
       >
         <section className="hero-section" id="main">
           <div className="hero-content">

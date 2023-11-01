@@ -58,7 +58,11 @@ def upload_file(request):
                 encrypted_file_path = enc.encrypt_file(
                     temp_file.name, encrypted_file_id.hex)
                 # Generate a unique ID for the encrypted file
+                encrypted_data = encrypted_file_path[0]
+                encrypted_file_path = encrypted_file_path[1]
                 print(f"get path:{encrypted_file_path}")
+
+                print(f"get data:{encrypted_data}")
                 os.remove(temp_file.name)
 
                 # Debugging: Print the user_id
@@ -85,14 +89,26 @@ def upload_file(request):
 
                 encrypted_file_url = encrypted_file_url.replace(
                     '/media/', '/', 1)
+
+                encrypted_datas = b64encode(encrypted_data).decode('utf-8')
+                encrypted_data = binascii.hexlify(
+                    encrypted_data).decode('utf-8')
                 response_data = {
                     'encrypted_file': encrypted_file_url,
 
                     #        'encryption_key': key  # Include the key in the response
                     'encryption_key': key,  # Include the hexadecimal key in the response
                     'encrypted_file_id': encrypted_file_id.hex  # Include the unique ID
+                    , 'encrypted_datas': encrypted_datas,
+                    'encrypted_data_hex': encrypted_data
                 }
+                # response_data.write(encrypted_data)
                 return JsonResponse(response_data)
+
+                # response = FileResponse(open(encrypted_file_path, 'rb'))
+                # response['Content-Disposition'] = f'attachment; filename="{encrypted_file.original_file_name}.enc"'
+
+                # return response
             except Exception as e:
                 return HttpResponseBadRequest('Error during encryption: {}'.format(str(e)))
     return JsonResponse({'error': 'Invalid request'})
